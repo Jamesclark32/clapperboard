@@ -1,0 +1,24 @@
+{
+    "name": "clapperbrd/codegen",
+    "description": "Opinionated Laravel application code generation commands for AI agents.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^12.0",
+        "illuminate/support": "^12.0",
+        "illuminate/view": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Clapperbrd\\Codegen\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Clapperbrd\\Codegen\\CodegenServiceProvider"
+            ]
+        }
+    }
+}
