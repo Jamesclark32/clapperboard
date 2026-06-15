@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\ModelResources;
+namespace JamesClark32\Clapperboard\ModelResources;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -35,11 +35,11 @@ class Seeder
 
     public function configFileName(): string
     {
-        return Str::of($this->resourceName)->singular()->snake()->append('.php');
+        return Str::of($this->resourceName)->plural()->snake()->append('.php');
     }
 
     public function configName(): string
     {
-        return Str::of($this->resourceName)->singular()->snake();
+        return Str::of($this->resourceName)->plural()->snake();
     }
 }

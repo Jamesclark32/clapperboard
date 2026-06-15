@@ -2,14 +2,14 @@
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import type { Language, {{ str($resource->resource)->studly()->singular() }}, User } from './{{ $resource->componentTypes->filename() }}';
 
 const { breadcrumbs, pageTitle, {{ str($resource->resource)->camel()->singular() }}, language } = defineProps<{
     breadcrumbs: BreadcrumbItem[];
-    user: User;
     pageTitle: string;
-    {{ str($resource->resource)->camel()->singular() }}: {{ str($resource->resource)->studly()->singular() }};
-    language: Language;
+    {{ str($resource->resource)->camel()->singular() }}: Record<string, unknown>;
+    language: {
+        fields: Record<string, string>;
+    };
 }>();
 </script>
 
@@ -23,8 +23,6 @@ const { breadcrumbs, pageTitle, {{ str($resource->resource)->camel()->singular()
                     @{{ pageTitle }}
                 </h1>
             </div>
-
-            @{{ language.messages.greeting }}
             <pre>@{{ {{ str($resource->resource)->camel()->singular() }} }}</pre>
         </div>
     </AppLayout>

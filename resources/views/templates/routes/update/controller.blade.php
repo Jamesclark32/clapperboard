@@ -2,19 +2,23 @@
 
 namespace {{ $resource->controller->namespace() }};
 
-use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use {{ $resource->action->qualifiedClassname() }};
-use {{ $resource->controller->qualifiedBaseController() }};
 use {{ $resource->formRequest->qualifiedClassname() }};
+use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use Illuminate\Http\RedirectResponse;
 
-final readonly class {{ $resource->controller->className() }} extends Controller
+final class {{ $resource->controller->className() }} extends BaseController
 {
     public function __invoke({{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}, {{ $resource->formRequest->className() }} $request, {{ $resource->action->className() }} {{ $resource->action->variableName() }}): RedirectResponse
     {
-        abort_if($request->user()->cannot('{{ $resource->verb }}', ${{ str($resource->resource)->camel()->singular() }}), 403);
+        // Abort with a 403 unless authorized by the {{ str($resource->resource)->studly()->singular() }}Policy
+        $this->authorize('{{ $resource->verb }}', ${{ str($resource->resource)->camel()->singular() }});
 
-        {{ $resource->action->variableName() }}->{{ $resource->action->entryMethod() }}(${{ str($resource->resource)->camel()->singular() }}, collect($request->validated()));
+        {{ $resource->action->variableName() }}->{{$user, $resource->action->entryMethod() }}(
+            $request->user(),
+            ${{ str($resource->resource)->camel()->singular() }},
+            collect($request->validated())
+        );
 
         return redirect()
             ->route('{{ str($resource->resource)->lower()->plural() }}.show', ${{ str($resource->resource)->camel()->singular() }})

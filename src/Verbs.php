@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
 enum Verbs: string
 {
@@ -32,9 +32,9 @@ enum Verbs: string
     {
         return match ($this) {
             self::Index => 1,
-            self::Show => 2,
-            self::Create => 3,
-            self::Store => 4,
+            self::Create => 2,
+            self::Store => 3,
+            self::Show => 4,
             self::Edit => 5,
             self::Update => 6,
             self::Destroy => 7,

@@ -3,52 +3,55 @@
 namespace {{ $resource->action->namespace() }};
 
 use App\Http\Queries\BaseQuery;
-use App\DTOs\{{ str($resource->resource)->studly()->plural() }}\CreateCollection;
 use App\Models\User;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
     public function getProps(User $user): array
     {
-        $data = CreateCollection::make([
+        return [
+            'breadcrumbs' => $this->getBreadcrumbs(),
             'form' => [
-                'name' => '',
-                'description' => '',
-                'price' => '',
-                'is_active' => true,
-                'category' => '',
+@foreach($resource->writableFillable() as $field)
+                '{{ $field }}' => {{ str($field)->startsWith(['is_', 'has_', 'can_', 'should_', 'will_', 'was_']) ? 'false' : 'null' }},
+@endforeach
             ],
-        ]);
-
-        return $this->getBaseProps($user, $data->toArray());
-    }
-
-    protected function getResourceName(): string
-    {
-        return '{{ str($resource->resource)->lower()->plural() }}';
+            'language' => $this->getLanguage(),
+            'options' => [],
+            'pageTitle' => $this->getPageTitle(),
+            'submit' => [
+                'method' => 'post',
+                'url' => route('{{ str($resource->resource)->lower()->plural() }}.store'),
+            ],
+        ];
     }
 
     protected function getBreadcrumbs(): array
     {
         return [
-            $this->getBaseBreadcrumb(),
             [
-                'title' => trans('{{ $resource->language->key('breadcrumbs.create') }}'),
+                'title' => trans('{{ $resource->language->key('breadcrumbs.resource') }}'),
+                'href' => route('{{ str($resource->resource)->lower()->plural() }}.index'),
+            ],
+            [
+                'title' => trans('{{ $resource->language->key('breadcrumbs.verb') }}'),
                 'href' => '#',
+            ],
+        ];
+    }
+
+    protected function getLanguage(): array
+    {
+        return [
+            'fields' => trans('{{ $resource->language->key('form.labels') }}'),
+            'form' => [
+                'submit' => trans('{{ $resource->language->key('form.buttons.submit') }}'),
             ],
         ];
     }
 
     protected function getPageTitle(): string
     {
-        return trans('{{ $resource->language->key('page_titles.create') }}');
-    }
-
-    protected function getLanguage(User $user, array $additionalMessages = []): array
-    {
-        $language = parent::getLanguage($user, $additionalMessages);
-        $language['form'] = trans('{{ $resource->language->key('form') }}');
-
-        return $language;
+        return trans('{{ $resource->language->key('page_title') }}');
     }
 }

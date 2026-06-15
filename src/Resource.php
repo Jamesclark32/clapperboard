@@ -1,27 +1,23 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
-use Clapperbrd\Codegen\Resources\Action;
-use Clapperbrd\Codegen\Resources\BrowserTest;
-use Clapperbrd\Codegen\Resources\Component;
-use Clapperbrd\Codegen\Resources\ComponentTypes;
-use Clapperbrd\Codegen\Resources\Controller;
-use Clapperbrd\Codegen\Resources\FeatureTest;
-use Clapperbrd\Codegen\Resources\FormRequest;
-use Clapperbrd\Codegen\Resources\Language;
-use Clapperbrd\Codegen\Resources\Query;
-use Clapperbrd\Codegen\Resources\QueryCollection;
-use Clapperbrd\Codegen\Resources\Route;
 use Illuminate\Support\Str;
+use JamesClark32\Clapperboard\Resources\Action;
+use JamesClark32\Clapperboard\Resources\BrowserTest;
+use JamesClark32\Clapperboard\Resources\Component;
+use JamesClark32\Clapperboard\Resources\Controller;
+use JamesClark32\Clapperboard\Resources\FeatureTest;
+use JamesClark32\Clapperboard\Resources\FormRequest;
+use JamesClark32\Clapperboard\Resources\Language;
+use JamesClark32\Clapperboard\Resources\Query;
+use JamesClark32\Clapperboard\Resources\Route;
 
 class Resource
 {
     public Action $action;
 
     public Component $component;
-
-    public ComponentTypes $componentTypes;
 
     public Controller $controller;
 
@@ -34,8 +30,6 @@ class Resource
     public Language $language;
 
     public Query $query;
-
-    public QueryCollection $queryCollection;
 
     public Route $route;
 
@@ -64,10 +58,8 @@ class Resource
         $this->route = new Route($resource, $verb, $routeKey);
         $this->controller = new Controller($resource, $verb);
         $this->query = new Query($resource, $verb);
-        $this->queryCollection = new QueryCollection($resource, $verb);
         $this->component = new Component($resource, $verb);
         $this->action = new Action($resource, $verb);
-        $this->componentTypes = new ComponentTypes($resource, $verb);
         $this->featureTest = new FeatureTest($resource, $verb);
         $this->browserTest = new BrowserTest($resource, $verb);
         $this->formRequest = new FormRequest($resource, $verb);
@@ -99,7 +91,7 @@ class Resource
 
     public function templateView(string $template): string
     {
-        return 'clapperbrd-codegen::templates.routes.'.$this->verb.'.'.$template;
+        return 'clapperboard::templates.routes.'.$this->verb.'.'.$template;
     }
 
     public function writableFillable(): array

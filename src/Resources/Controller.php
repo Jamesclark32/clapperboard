@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\Resources;
+namespace JamesClark32\Clapperboard\Resources;
 
 use Illuminate\Support\Str;
 
@@ -24,6 +24,19 @@ class Controller
             'Controllers',
             Str::of($this->resourceName)->plural()->studly(),
             Str::of($this->verb)->singular()->studly()->append('Controller.php'),
+        ];
+
+        return implode('/', $segments);
+    }
+
+    public function qualifiedBaseFilename(): string
+    {
+        $segments = [
+            'app',
+            'Http',
+            'Controllers',
+            Str::of($this->resourceName)->plural()->studly(),
+            $this->baseClassName().'.php',
         ];
 
         return implode('/', $segments);
@@ -66,10 +79,17 @@ class Controller
             'App',
             'Http',
             'Controllers',
-            'Controller',
         ]);
 
+        $segments->push(Str::of($this->resourceName)->studly()->plural());
+        $segments->push($this->baseClassName());
+
         return $segments->implode('\\');
+    }
+
+    public function baseClassName(): string
+    {
+        return 'BaseController';
     }
 
     public function className(): string

@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
-use Clapperbrd\Codegen\Support\FakerFieldMapper;
+use JamesClark32\Clapperboard\Support\FakerFieldMapper;
 
 class ModelAttribute
 {

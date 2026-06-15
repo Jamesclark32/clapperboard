@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelResource;
+use JamesClark32\Clapperboard\ModelResource;
 
 class NovaResourceGenerator
 {
@@ -20,6 +20,6 @@ class NovaResourceGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.nova_resource', ['resource' => $this->resource])->render();
+        return view('clapperboard::templates.nova_resource', ['resource' => $this->resource])->render();
     }
 }

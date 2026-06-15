@@ -1,21 +1,20 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
-use Clapperbrd\Codegen\Generators\BasePolicyGenerator;
-use Clapperbrd\Codegen\Generators\DataDictionaryGenerator;
-use Clapperbrd\Codegen\Generators\FactoryGenerator;
-use Clapperbrd\Codegen\Generators\InterfaceGenerator;
-use Clapperbrd\Codegen\Generators\MigrationGenerator;
-use Clapperbrd\Codegen\Generators\ModelGenerator;
-use Clapperbrd\Codegen\Generators\NovaResourceGenerator;
-use Clapperbrd\Codegen\Generators\PivotMigrationGenerator;
-use Clapperbrd\Codegen\Generators\PivotModelGenerator;
-use Clapperbrd\Codegen\Generators\PolicyGenerator;
-use Clapperbrd\Codegen\Generators\SeederConfigGenerator;
-use Clapperbrd\Codegen\Generators\SeederGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use JamesClark32\Clapperboard\Generators\BasePolicyGenerator;
+use JamesClark32\Clapperboard\Generators\DataDictionaryGenerator;
+use JamesClark32\Clapperboard\Generators\FactoryGenerator;
+use JamesClark32\Clapperboard\Generators\MigrationGenerator;
+use JamesClark32\Clapperboard\Generators\ModelGenerator;
+use JamesClark32\Clapperboard\Generators\NovaResourceGenerator;
+use JamesClark32\Clapperboard\Generators\PivotMigrationGenerator;
+use JamesClark32\Clapperboard\Generators\PivotModelGenerator;
+use JamesClark32\Clapperboard\Generators\PolicyGenerator;
+use JamesClark32\Clapperboard\Generators\SeederConfigGenerator;
+use JamesClark32\Clapperboard\Generators\SeederGenerator;
 
 class GenerateModelCommand extends Command
 {
@@ -100,7 +99,6 @@ class GenerateModelCommand extends Command
             PolicyGenerator::class,
             NovaResourceGenerator::class,
             DataDictionaryGenerator::class,
-            InterfaceGenerator::class,
         ];
     }
 

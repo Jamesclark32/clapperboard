@@ -1,4 +1,4 @@
-# clapperbrd/codegen
+# jamesclark32/clapperboard
 
 Opinionated Laravel application code generation commands for AI agents.
 
@@ -24,7 +24,7 @@ For local development via a Composer path repository:
         }
     ],
     "require-dev": {
-        "clapperbrd/codegen": "*"
+        "jamesclark32/clapperboard": "^0.1"
     }
 }
 ```
@@ -32,16 +32,23 @@ For local development via a Composer path repository:
 Then run:
 
 ```bash
-composer update clapperbrd/codegen
+composer update jamesclark32/clapperboard
 ```
 
-Laravel package discovery will register `Clapperbrd\Codegen\CodegenServiceProvider` automatically.
+Laravel package discovery will register `JamesClark32\Clapperboard\CodegenServiceProvider` automatically.
+
+Install agent-facing project instructions:
+
+```bash
+php artisan clapperboard:install
+```
 
 ## Usage
 
 Preview changes without writing files:
 
 ```bash
+php artisan clapperboard:install --dry-run --json
 php artisan generate:route Widgets index --dry-run --json
 php artisan generate:model Widget "Widget catalog item" '{"attributes":[{"name":"name","fillable":true,"columnType":"string"}],"relationships":[]}' --dry-run --json
 ```
@@ -57,4 +64,5 @@ php artisan generate:model Widget "Widget catalog item" '{"attributes":[{"name":
 
 - `--dry-run` returns a generation plan without writing files.
 - `--json` returns machine-readable output for agents.
+- `php artisan clapperboard:install` writes Clapperboard instructions into `AGENTS.md` and `.github/copilot-instructions.md`.
 - Generated output assumes the host app follows the architecture used by this codebase.

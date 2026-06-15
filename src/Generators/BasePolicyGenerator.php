@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelResource;
+use JamesClark32\Clapperboard\ModelResource;
 
 class BasePolicyGenerator
 {
@@ -15,6 +15,6 @@ class BasePolicyGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.base_policy')->render();
+        return view('clapperboard::templates.base_policy')->render();
     }
 }

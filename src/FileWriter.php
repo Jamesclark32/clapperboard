@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;

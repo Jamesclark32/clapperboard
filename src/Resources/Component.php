@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\Resources;
+namespace JamesClark32\Clapperboard\Resources;
 
 use Illuminate\Support\Str;
 
@@ -24,6 +24,19 @@ class Component
             'pages',
             Str::of($this->resourceName)->plural()->studly(),
             Str::of($this->verb)->singular()->studly()->append('.vue'),
+        ];
+
+        return implode('/', $segments);
+    }
+
+    public function qualifiedFormFilename(): string
+    {
+        $segments = [
+            'resources',
+            'js',
+            'pages',
+            Str::of($this->resourceName)->plural()->studly(),
+            'Form.vue',
         ];
 
         return implode('/', $segments);

@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelResource;
+use JamesClark32\Clapperboard\ModelResource;
 
 class FactoryGenerator
 {
@@ -20,6 +20,6 @@ class FactoryGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.factory', ['resource' => $this->resource])->render();
+        return view('clapperboard::templates.factory', ['resource' => $this->resource])->render();
     }
 }

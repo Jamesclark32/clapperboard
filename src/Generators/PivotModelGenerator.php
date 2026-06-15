@@ -1,10 +1,10 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelRelationship;
-use Clapperbrd\Codegen\ModelResource;
-use Clapperbrd\Codegen\ModelResources\PivotModel;
+use JamesClark32\Clapperboard\ModelRelationship;
+use JamesClark32\Clapperboard\ModelResource;
+use JamesClark32\Clapperboard\ModelResources\PivotModel;
 
 class PivotModelGenerator
 {
@@ -22,7 +22,7 @@ class PivotModelGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.pivot_model', [
+        return view('clapperboard::templates.pivot_model', [
             'pivotModel' => $this->pivotModel,
         ])->render();
     }

@@ -1,22 +1,22 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
-use Clapperbrd\Codegen\Generators\ActionGenerator;
-use Clapperbrd\Codegen\Generators\BaseCommandGenerator;
-use Clapperbrd\Codegen\Generators\BaseQueryCollectionGenerator;
-use Clapperbrd\Codegen\Generators\BaseQueryGenerator;
-use Clapperbrd\Codegen\Generators\BrowserTestGenerator;
-use Clapperbrd\Codegen\Generators\ComponentGenerator;
-use Clapperbrd\Codegen\Generators\ComponentTypesGenerator;
-use Clapperbrd\Codegen\Generators\ControllerGenerator;
-use Clapperbrd\Codegen\Generators\FeatureTestGenerator;
-use Clapperbrd\Codegen\Generators\FormRequestGenerator;
-use Clapperbrd\Codegen\Generators\LanguageGenerator;
-use Clapperbrd\Codegen\Generators\RouteGenerator;
-use Clapperbrd\Codegen\Generators\WebRouteGenerator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use JamesClark32\Clapperboard\Generators\ActionGenerator;
+use JamesClark32\Clapperboard\Generators\BaseControllerGenerator;
+use JamesClark32\Clapperboard\Generators\BaseCommandGenerator;
+use JamesClark32\Clapperboard\Generators\BaseQueryGenerator;
+use JamesClark32\Clapperboard\Generators\BrowserTestGenerator;
+use JamesClark32\Clapperboard\Generators\ComponentGenerator;
+use JamesClark32\Clapperboard\Generators\ControllerGenerator;
+use JamesClark32\Clapperboard\Generators\FeatureTestGenerator;
+use JamesClark32\Clapperboard\Generators\FormComponentGenerator;
+use JamesClark32\Clapperboard\Generators\FormRequestGenerator;
+use JamesClark32\Clapperboard\Generators\LanguageGenerator;
+use JamesClark32\Clapperboard\Generators\RouteGenerator;
+use JamesClark32\Clapperboard\Generators\WebRouteGenerator;
 
 class GenerateRouteCommand extends Command
 {
@@ -107,13 +107,13 @@ class GenerateRouteCommand extends Command
         return [
             BaseCommandGenerator::class,
             BaseQueryGenerator::class,
-            BaseQueryCollectionGenerator::class,
+            BaseControllerGenerator::class,
             ControllerGenerator::class,
             ActionGenerator::class,
             FormRequestGenerator::class,
             LanguageGenerator::class,
+            FormComponentGenerator::class,
             ComponentGenerator::class,
-            ComponentTypesGenerator::class,
             RouteGenerator::class,
             WebRouteGenerator::class,
             FeatureTestGenerator::class,
@@ -126,7 +126,6 @@ class GenerateRouteCommand extends Command
         if (in_array($generatorClass, [
             BaseCommandGenerator::class,
             BaseQueryGenerator::class,
-            BaseQueryCollectionGenerator::class,
         ], true)) {
             return new $generatorClass;
         }

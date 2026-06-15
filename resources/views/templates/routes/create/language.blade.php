@@ -1,22 +1,19 @@
 @php echo '<?php'.PHP_EOL @endphp
 
 return [
-    'page_titles' => [
-        'create' => '{{ $resource->component->pageTitle() }}',
-    ],
+    'page_title' => '{{ $resource->component->pageTitle() }}',
     'breadcrumbs' => [
-        'index' => '{{ str($resource->resource)->title()->plural() }}',
-        'create' => 'Create',
-    ],
-    'messages' => [
-        'greeting' => 'Hello, :name.',
-    ],
-    'fields' => [
-@foreach($resource->languageFieldEntries() as $field => $label)
-        '{{ $field }}' => '{{ $label }}',
-@endforeach
+        'resource' => '{{ str($resource->resource)->title()->plural() }}',
+        'verb' => 'Create',
     ],
     'form' => [
-        'submit' => 'Create {{ str($resource->resource)->title()->singular() }}',
+        'labels' => [
+@foreach($resource->languageFieldEntries() as $field => $label)
+            '{{ $field }}' => '{{ $label }}',
+@endforeach
+        ],
+        'buttons' => [
+            'submit' => 'Create new {{ str($resource->resource)->title()->singular() }}',
+        ],
     ],
 ];

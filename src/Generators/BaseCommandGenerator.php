@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
 use Illuminate\Support\Facades\File;
 
@@ -13,7 +13,7 @@ class BaseCommandGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.base_command')->render();
+        return view('clapperboard::templates.base_command')->render();
     }
 
     public function shouldGenerate(): bool

@@ -3,79 +3,66 @@
 namespace {{ $resource->action->namespace() }};
 
 use App\Http\Queries\BaseQuery;
-use App\DTOs\{{ str($resource->resource)->studly()->plural() }}\IndexCollection;
 use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use App\Models\User;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
-    public function getProps(User $user, ?string $search): array
+    public function getProps(User $user): array
     {
-        $paginator = $this->get{{ str($resource->resource)->studly()->plural() }}($search);
+        $this->authorize($user);
 
-        $data = IndexCollection::make([
-            '{{ str($resource->resource)->lower()->plural() }}' => [
-                'data' => $paginator->items(),
-                'meta' => $paginator->toArray(),
-            ],
-            'filters' => [
-                'search' => $search,
-            ],
-        ]);
-
-        return $this->getBaseProps($user, $data->toArray());
+return [
+            'breadcrumbs' => $this->getBreadcrumbs(),
+            'pageTitle' => $this->getPageTitle(),
+            'userName' => $this->getUserName($user),
+            '{{ str($resource->resource)->camel()->plural() }}' => $this->get{{ str($resource->resource)->studly()->plural() }}(),
+        ];
     }
 
-    protected function get{{ str($resource->resource)->studly()->plural() }}(?string $search): LengthAwarePaginator
+    protected function authorize(User $user): void
     {
-        $query = {{ str($resource->resource)->studly()->singular() }}::query()
+        if(Gate::forUser($user)->denies('index', {{ str($resource->resource)->studly()->singular() }}::class)) {
+            throw new AuthorizationException;
+        }
+    }
+
+    protected function getBreadcrumbs(): array
+    {
+        return [
+            [
+                'title' => trans('{{ str($resource->resource)->snake()->singular() }}/index.breadcrumbs.resource'),
+                'href' => '#',
+            ],
+        ];
+    }
+
+    protected function getPageTitle(): string
+    {
+        return trans('{{ str($resource->resource)->snake()->singular() }}/index.page_title');
+    }
+
+    protected function getUserName(User $user): string
+    {
+        return $user->name;
+    }
+
+    protected function get{{ str($resource->resource)->studly()->plural() }}(): LengthAwarePaginator
+    {
+        return {{ str($resource->resource)->studly()->singular() }}::query()
             ->select([
 @if($resource->fillable)
 @foreach($resource->fillable as $fillable)
                 '{{ $fillable }}',
 @endforeach
 @endif
-            ]);
-
-        $this->applySearch($query, $search);
-
-        return $query->latest()->paginate(25)->withQueryString();
-    }
-
-    protected function applySearch(Builder $query, ?string $search): void
-    {
-        if ($search === null) {
-            return;
-        }
-
-        $query->where(function (Builder $query) use ($search): void {
-@if(in_array('name', $resource->fillable))
-            $query->where('name', 'like', "%{$search}%");
-@else
-            $query->whereKey($search);
-@endif
-@if(in_array('description', $resource->fillable))
-            $query->orWhere('description', 'like', "%{$search}%");
-@endif
-        });
-    }
-
-    protected function getResourceName(): string
-    {
-        return '{{ str($resource->resource)->lower()->plural() }}';
-    }
-
-    protected function getBreadcrumbs(): array
-    {
-        return [
-            $this->getBaseBreadcrumb(),
-        ];
-    }
-
-    protected function getPageTitle(): string
-    {
-        return trans('{{ $resource->language->key('page_titles.index') }}');
+                        'created_at',
+                        'updated_at',
+            ])
+            ->latest()
+            ->paginate(25);
     }
 }

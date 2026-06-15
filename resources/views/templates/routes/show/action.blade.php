@@ -3,44 +3,58 @@
 namespace {{ $resource->action->namespace() }};
 
 use App\Http\Queries\BaseQuery;
-use App\DTOs\{{ str($resource->resource)->studly()->plural() }}\ShowCollection;
 use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Access\Gate;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
     public function getProps(User $user, {{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}): array
     {
-        $data = ShowCollection::make([
-            '{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }},
-        ]);
+        $this->authorize($user, ${{ str($resource->resource)->camel()->singular() }});
 
-        return $this->getBaseProps($user, array_merge($data->toArray(), [
-            'breadcrumbs' => $this->getBreadcrumbs(${{ str($resource->resource)->camel()->singular() }}),
-        ]));
+        return [
+            'breadcrumbs' => $this->getBreadcrumbs(${{ str($resource->resource)->camel()->singular()}}),
+            'pageTitle' => $this->getPageTitle(),
+            'userName' => $this->getUserName($user),
+            '{{ str($resource->resource)->camel()->singular() }}' => $this->get{{ str($resource->resource)->studly()->singular() }}(${{ str($resource->resource)->camel()->singular() }}),
+        ];
     }
 
-    protected function getResourceName(): string
+    protected function authorize(User $user {{ str($resource->resource)->studly()->singular() }}, ${{ str($resource->resource)->camel()->singular() }}): void
     {
-        return '{{ str($resource->resource)->lower()->plural() }}';
-    }
-
-    protected function getBreadcrumbs({{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }} = null): array
-    {
-        $breadcrumbs = [$this->getBaseBreadcrumb()];
-
-        if (${{ str($resource->resource)->camel()->singular() }}) {
-            $breadcrumbs[] = [
-                'title' => (string) ${{ str($resource->resource)->camel()->singular() }}->getKey(),
-                'href' => '#',
-            ];
+        if(Gate::forUser($user)->denies('show', ${{ str($resource->resource)->camel()->singular() }})) {
+         throw new AuthorizationException;
         }
+    }
 
-        return $breadcrumbs;
+    protected function getBreadcrumbs({{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}): array
+    {
+        return [
+            [
+                'title' => trans('{{ str($resource->resource)->snake()->singular() }}/show.breadcrumbs.resource'),
+                'href' => route('{{ str($resource->resource)->lower()->plural() }}.index'),
+            ],
+            [
+                'title' => ${{ str($resource->resource)->camel()->singular()}}->name,
+                'href' => '#',
+            ],
+        ];
     }
 
     protected function getPageTitle(): string
     {
-        return trans('{{ $resource->language->key('page_titles.show') }}');
+        return trans('{{ str($resource->resource)->snake()->singular() }}/show.page_title');
+    }
+
+    protected function getUserName(User $user): string
+    {
+        return $user->name;
+    }
+
+    protected function get{{ str($resource->resource)->studly()->singular() }}(${{ str($resource->resource)->camel()->singular() }}): array
+    {
+        return ${{ str($resource->resource)->camel()->singular() }};
     }
 }

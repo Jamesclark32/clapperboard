@@ -1,16 +1,16 @@
 <?php
 
-namespace Clapperbrd\Codegen;
+namespace JamesClark32\Clapperboard;
 
-use Clapperbrd\Codegen\ModelResources\DataDictionary;
-use Clapperbrd\Codegen\ModelResources\Factory;
-use Clapperbrd\Codegen\ModelResources\Migration;
-use Clapperbrd\Codegen\ModelResources\Model;
-use Clapperbrd\Codegen\ModelResources\NovaResource;
-use Clapperbrd\Codegen\ModelResources\Policy;
-use Clapperbrd\Codegen\ModelResources\Seeder;
-use Clapperbrd\Codegen\ModelResources\SeederConfig;
 use Illuminate\Support\Collection;
+use JamesClark32\Clapperboard\ModelResources\DataDictionary;
+use JamesClark32\Clapperboard\ModelResources\Factory;
+use JamesClark32\Clapperboard\ModelResources\Migration;
+use JamesClark32\Clapperboard\ModelResources\Model;
+use JamesClark32\Clapperboard\ModelResources\NovaResource;
+use JamesClark32\Clapperboard\ModelResources\Policy;
+use JamesClark32\Clapperboard\ModelResources\Seeder;
+use JamesClark32\Clapperboard\ModelResources\SeederConfig;
 
 class ModelResource
 {

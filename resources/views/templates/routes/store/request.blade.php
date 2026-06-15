@@ -5,7 +5,7 @@ namespace {{ $resource->formRequest->namespace() }};
 use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use Illuminate\Foundation\Http\FormRequest;
 
-final readonly class {{ $resource->formRequest->className() }} extends FormRequest
+final class {{ $resource->formRequest->className() }} extends FormRequest
 {
     public function authorize(): bool
     {

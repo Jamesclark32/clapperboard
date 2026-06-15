@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelResource;
+use JamesClark32\Clapperboard\ModelResource;
 
 class MigrationGenerator
 {
@@ -20,6 +20,6 @@ class MigrationGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.migration', ['resource' => $this->resource])->render();
+        return view('clapperboard::templates.migration', ['resource' => $this->resource])->render();
     }
 }

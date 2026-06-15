@@ -1,10 +1,10 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelRelationship;
-use Clapperbrd\Codegen\ModelResource;
-use Clapperbrd\Codegen\ModelResources\PivotMigration;
+use JamesClark32\Clapperboard\ModelRelationship;
+use JamesClark32\Clapperboard\ModelResource;
+use JamesClark32\Clapperboard\ModelResources\PivotMigration;
 
 class PivotMigrationGenerator
 {
@@ -25,7 +25,7 @@ class PivotMigrationGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.pivot_migration', [
+        return view('clapperboard::templates.pivot_migration', [
             'resource' => $this->resource,
             'pivotMigration' => $this->pivotMigration,
         ])->render();

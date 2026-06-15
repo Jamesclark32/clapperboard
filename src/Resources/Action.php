@@ -1,9 +1,9 @@
 <?php
 
-namespace Clapperbrd\Codegen\Resources;
+namespace JamesClark32\Clapperboard\Resources;
 
-use Clapperbrd\Codegen\Verbs;
 use Illuminate\Support\Str;
+use JamesClark32\Clapperboard\Verbs;
 
 class Action
 {

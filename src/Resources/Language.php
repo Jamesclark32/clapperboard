@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\Resources;
+namespace JamesClark32\Clapperboard\Resources;
 
 use Illuminate\Support\Str;
 
@@ -21,16 +21,16 @@ class Language
         return implode('/', [
             'lang',
             'en',
-            Str::of($this->resourceName)->plural()->studly(),
-            Str::of($this->verb)->singular()->studly()->append('.php'),
+            Str::of($this->resourceName)->plural()->snake(),
+            Str::of($this->verb)->singular()->snake()->append('.php'),
         ]);
     }
 
     public function key(?string $path = null): string
     {
         $key = collect([
-            Str::of($this->resourceName)->plural()->studly(),
-            Str::of($this->verb)->singular()->studly(),
+            Str::of($this->resourceName)->plural()->snake(),
+            Str::of($this->verb)->singular()->snake(),
         ])->implode('/');
 
         if ($path) {

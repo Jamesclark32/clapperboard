@@ -1,30 +1,24 @@
 <script setup lang="ts">
     import { Head, Link } from '@inertiajs/vue3';
-@if($resource->verb==='index')
-    import DataPagination from '@/components/DataPagination.vue';
-    import DataTable, { type Column } from '@/components/DataTable.vue'
-@endif
     import AppLayout from '@/layouts/AppLayout.vue';
     import type { BreadcrumbItem } from '@/types';
-@if($resource->verb==='index')
-    import type { PaginatedData } from '@/types/pagination';
-@endif
-    import type { User } from './{{ $resource->componentTypes->filename() }}';
 
     const { breadcrumbs, user, pageTitle @if($resource->verb==='index'), {{ str($resource->resource)->lower()->plural() }}@endif } = defineProps < {
         breadcrumbs: BreadcrumbItem[];
-        user: User;
+        user: {
+            name: string;
+        };
         pageTitle: string;
 @if($resource->verb==='index')
-        {{ str($resource->resource)->lower()->plural() }}: PaginatedData<{{ str($resource->resource)->studly()->singular() }}>;
+        {{ str($resource->resource)->lower()->plural() }}: {
+            data: Record<string, unknown>[];
+            current_page: number;
+            last_page: number;
+            per_page: number;
+            total: number;
+        };
 @endif
     }>();
-
-    const columns: Column<{{ str($resource->resource)->studly()->singular() }}>[] = [
-@foreach($resource->fillable as $fillable)
-        { key: '{{ $fillable }}', label: '{{ str($fillable)->apa() }}'},
-@endforeach
-    ]
 
 </script>
 
@@ -42,20 +36,36 @@
             Hello, @{{user.name}}. Here's all the @{{str($resource->resource)->title()->plural()}}.
 
 @if($resource->verb==='index')
-                <DataTable :columns="columns" :data="{{ str($resource->resource)->lower()->plural() }}.data">
-                    <template #title="{ row }">
-                        <Link :href="`/v/${row.id}`" class="underline">
-                                todo, populate me
-                        </Link>
-                    </template>
-                </DataTable>
+                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
+                            <tr>
+@foreach($resource->writableFillable() as $fillable)
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">{{ str($fillable)->apa() }}</th>
+@endforeach
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">ID</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
+                            <tr v-for="row in {{ str($resource->resource)->lower()->plural() }}.data" :key="String(row.id)">
+@foreach($resource->writableFillable() as $fillable)
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@{{ row.{{ $fillable }} ?? ' - ' }}</td>
+@endforeach
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
+                                    <Link :href="`/v/${row.id}`" class="underline">
+                                        @{{ row.id }}
+                                    </Link>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <DataPagination
-                    :current-page="{{ str($resource->resource)->lower()->plural() }}.current_page"
-                    :last-page="{{ str($resource->resource)->lower()->plural() }}.last_page"
-                    :per-page="{{ str($resource->resource)->lower()->plural() }}.per_page"
-                    :total="{{ str($resource->resource)->lower()->plural() }}.total"
-                />
+                <div class="text-sm text-gray-600 dark:text-gray-300">
+                    Page @{{ {{ str($resource->resource)->lower()->plural() }}.current_page }} of @{{ {{ str($resource->resource)->lower()->plural() }}.last_page }}
+                    • @{{ {{ str($resource->resource)->lower()->plural() }}.total }} total
+                    • @{{ {{ str($resource->resource)->lower()->plural() }}.per_page }} per page
+                </div>
 @endif
         </div>
     </AppLayout>

@@ -1,11 +1,11 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\Resource;
-use Clapperbrd\Codegen\RouteFileParser;
-use Clapperbrd\Codegen\Verbs;
 use Illuminate\Support\Collection;
+use JamesClark32\Clapperboard\Resource;
+use JamesClark32\Clapperboard\RouteFileParser;
+use JamesClark32\Clapperboard\Verbs;
 
 class RouteGenerator
 {

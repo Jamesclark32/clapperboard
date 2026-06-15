@@ -13,7 +13,7 @@ class {{ $resource->factory->className() }} extends Factory
             '{{ Str::snake($relationship->model) }}_id' => \App\Models\{{ $relationship->model }}::factory(),
 @endforeach
 @foreach($resource->attributes as $attribute)
-            '{{ $attribute->name }}' => fake()->{{ $attribute->fakerMethod }},
+            '{{ $attribute->name }}' => fake()->{!! str_contains($attribute->fakerMethod, '(') ? $attribute->fakerMethod : $attribute->fakerMethod.'('.$attribute->fakerParameterString().')' !!},
 @endforeach
         ];
     }

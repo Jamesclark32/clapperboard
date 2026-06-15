@@ -1,8 +1,8 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\ModelResource;
+use JamesClark32\Clapperboard\ModelResource;
 
 class SeederConfigGenerator
 {
@@ -20,6 +20,6 @@ class SeederConfigGenerator
 
     public function fileContents(): string
     {
-        return view('clapperbrd-codegen::templates.seeder_config', ['resource' => $this->resource])->render();
+        return view('clapperboard::templates.seeder_config', ['resource' => $this->resource])->render();
     }
 }

@@ -26,8 +26,10 @@ test('returns expected inertia component and props', function (): void {
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('{{ $resource->component->namespacedName() }}')
-            ->where('pageTitle', trans('{{ $resource->language->key('page_titles.create') }}'))
-            ->has('user'));
+            ->where('pageTitle', trans('{{ $resource->language->key('page_title') }}'))
+            ->has('form')
+            ->has('language.fields')
+            ->where('submit.method', 'post'));
 })->group('{{ str($resource->resource)->lower() }}');
 
 test('redirects guests to the login page', function (): void {

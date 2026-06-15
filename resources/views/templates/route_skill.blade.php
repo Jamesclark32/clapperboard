@@ -75,9 +75,9 @@ TOOD: Query, command, form request class
 
 ## Files
 - Controller: {{ $resource->controller->qualifiedFilename() }}
+- Base Controller: {{ $resource->controller->qualifiedBaseFilename() }}
 - Action: {{ $resource->action->qualifiedFilename() }}
 - Component: {{ $resource->component->qualifiedFilename() }}
-- Types: {{ $resource->componentTypes->qualifiedFilename() }}
 - Route: {{ $resource->route->qualifiedFilename() }}
 - Feature Test: {{ $resource->featureTest->qualifiedFilename() }}
 - Browser Test: {{ $resource->browserTest->qualifiedFilename() }}

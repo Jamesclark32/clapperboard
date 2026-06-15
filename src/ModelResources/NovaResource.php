@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\ModelResources;
+namespace JamesClark32\Clapperboard\ModelResources;
 
 use Illuminate\Support\Str;
 

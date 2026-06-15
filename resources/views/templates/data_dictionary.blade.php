@@ -43,7 +43,7 @@ This model supports soft deletion. Records are not permanently removed from the 
  - Seeder: {{ $resource->seeder->qualifiedFilename() }}
  - Seeder Config: {{ $resource->seederConfig->qualifiedFilename() }}
  - Policy: {{ $resource->policy->qualifiedFilename() }}
- - Routes: routes/web/{{ str($resource->resource)->snake()->singular() }}.php
+ - Routes: routes/web/{{ str($resource->resource)->snake()->plural() }}.php
 
  ### BelongsToMany and MorphMany relationships will also have a pivot table and related pivot model.
 

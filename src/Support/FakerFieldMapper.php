@@ -1,6 +1,6 @@
 <?php
 
-namespace Clapperbrd\Codegen\Support;
+namespace JamesClark32\Clapperboard\Support;
 
 class FakerFieldMapper
 {

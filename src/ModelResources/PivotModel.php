@@ -1,9 +1,9 @@
 <?php
 
-namespace Clapperbrd\Codegen\ModelResources;
+namespace JamesClark32\Clapperboard\ModelResources;
 
-use Clapperbrd\Codegen\ModelRelationship;
 use Illuminate\Support\Str;
+use JamesClark32\Clapperboard\ModelRelationship;
 
 class PivotModel
 {

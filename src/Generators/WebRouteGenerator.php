@@ -1,9 +1,9 @@
 <?php
 
-namespace Clapperbrd\Codegen\Generators;
+namespace JamesClark32\Clapperboard\Generators;
 
-use Clapperbrd\Codegen\Resource;
 use Illuminate\Support\Facades\File;
+use JamesClark32\Clapperboard\Resource;
 
 class WebRouteGenerator
 {
