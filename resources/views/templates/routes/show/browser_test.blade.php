@@ -11,7 +11,7 @@ it('displays with no errors', function (): void {
     $page = visit(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
     $page->assertNoJavascriptErrors()
-        ->assertSee(trans('{{ $resource->language->key('page_titles.show') }}'))
+        ->assertSee(trans('{{ $resource->language->key('page_title') }}'))
         ->assertDontSee('A canary');
 })->group('{{ str($resource->resource)->lower() }}');
 
@@ -23,7 +23,7 @@ it('displays template elements', function (): void {
     $page = visit(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
     $page
-        ->assertSee(trans('{{ $resource->language->key('messages.greeting') }}', ['name' => $user->name]))
+        ->assertSee((string) ${{ str($resource->resource)->camel()->singular() }}->getKey())
         ->assertPresent('nav[aria-label="breadcrumb"]')
         ->assertPresent('[data-slot="sidebar"]');
 })->group('{{ str($resource->resource)->lower() }}');

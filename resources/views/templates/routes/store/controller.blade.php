@@ -2,6 +2,7 @@
 
 namespace {{ $resource->controller->namespace() }};
 
+use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use {{ $resource->action->qualifiedClassname() }};
 use {{ $resource->formRequest->qualifiedClassname() }};
 use Illuminate\Http\RedirectResponse;
@@ -15,8 +16,8 @@ final class {{ $resource->controller->className() }} extends BaseController
 
         ${{ str($resource->resource)->camel()->singular() }} = {{ $resource->action->variableName() }}->{{ $resource->action->entryMethod() }}(
             $request->user(),
-            collect($request->validated()
-            ));
+            collect($request->validated()),
+        );
 
         return redirect()
             ->route('{{ str($resource->resource)->lower()->plural() }}.show', ${{ str($resource->resource)->camel()->singular() }})

@@ -37,43 +37,43 @@ function optionLabel(option: unknown): string {
         <div class="space-y-2">
 @if(str($field)->startsWith(['is_', 'has_', 'can_', 'should_', 'will_', 'was_']))
             <label class="flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-800">
-                <input id="{{ $field }}" v-model="props.form.{{ $field }}" type="checkbox" class="h-4 w-4 rounded border-gray-300" />
-                <span class="text-sm text-gray-700 dark:text-gray-200">@{{ props.language.fields.{{ $field }} ?? '{{ str($field)->apa()->toString() }}' }}</span>
+                <input id="{{ $field }}" v-model="props.form['{{ $field }}']" type="checkbox" class="h-4 w-4 rounded border-gray-300" />
+                <span class="text-sm text-gray-700 dark:text-gray-200">@php echo "{{ props.language.fields['{$field}'] ?? '".str($field)->apa()->toString()."' }}" @endphp</span>
             </label>
 @else
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-200" for="{{ $field }}">
-                @{{ props.language.fields.{{ $field }} ?? '{{ str($field)->apa()->toString() }}' }}
+                @php echo "{{ props.language.fields['{$field}'] ?? '".str($field)->apa()->toString()."' }}" @endphp
             </label>
 
             <select
-                v-if="Array.isArray(props.options.{{ $field }})"
+                v-if="Array.isArray(props.options['{{ $field }}'])"
                 id="{{ $field }}"
-                v-model="props.form.{{ $field }}"
+                v-model="props.form['{{ $field }}']"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
             >
                 <option :value="null"></option>
-                <option v-for="(option, index) in props.options.{{ $field }}" :key="`${index}-${optionLabel(option)}`" :value="optionValue(option)">
+                <option v-for="(option, index) in props.options['{{ $field }}']" :key="`${index}-${optionLabel(option)}`" :value="optionValue(option)">
                     @{{ optionLabel(option) }}
                 </option>
             </select>
             <textarea
                 v-else-if="'{{ $field }}' === 'description'"
                 id="{{ $field }}"
-                v-model="props.form.{{ $field }}"
+                v-model="props.form['{{ $field }}']"
                 rows="4"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
-            />
+            ></textarea>
             <input
                 v-else
                 id="{{ $field }}"
-                v-model="props.form.{{ $field }}"
+                v-model="props.form['{{ $field }}']"
                 type="text"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
             />
 @endif
 
-            <p v-if="props.form.errors.{{ $field }}" class="text-sm text-red-600 dark:text-red-400">
-                @{{ props.form.errors.{{ $field }} }}
+            <p v-if="props.form.errors['{{ $field }}']" class="text-sm text-red-600 dark:text-red-400">
+                @php echo "{{ props.form.errors['{$field}'] }}" @endphp
             </p>
         </div>
 @endforeach

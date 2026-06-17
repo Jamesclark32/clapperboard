@@ -14,7 +14,7 @@ final class {{ $resource->controller->className() }} extends BaseController
         // Abort with a 403 unless authorized by the {{ str($resource->resource)->studly()->singular() }}Policy
         $this->authorize('{{ $resource->verb }}', ${{ str($resource->resource)->camel()->singular() }});
 
-        {{ $resource->action->variableName() }}->{{$user, $resource->action->entryMethod() }}(
+        {{ $resource->action->variableName() }}->{{ $resource->action->entryMethod() }}(
             $request->user(),
             ${{ str($resource->resource)->camel()->singular() }},
             collect($request->validated())

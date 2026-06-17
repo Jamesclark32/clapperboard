@@ -5,64 +5,96 @@ namespace {{ $resource->action->namespace() }};
 use App\Http\Queries\BaseQuery;
 use App\Models\{{ str($resource->resource)->studly()->singular() }};
 use App\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\Access\Gate;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
-    public function getProps(User $user): array
+    public function getProps(User $user, ?string $search = null): array
     {
-        $this->authorize($user);
+        $paginator = $this->get{{ str($resource->resource)->studly()->plural() }}($search);
 
-return [
+        return [
             'breadcrumbs' => $this->getBreadcrumbs(),
             'pageTitle' => $this->getPageTitle(),
-            'userName' => $this->getUserName($user),
-            '{{ str($resource->resource)->camel()->plural() }}' => $this->get{{ str($resource->resource)->studly()->plural() }}(),
+            '{{ str($resource->resource)->lower()->plural() }}' => [
+                'data' => collect($paginator->items())
+                    ->map(fn ({{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}) => [
+@foreach($resource->writableFillable() as $fillable)
+                        '{{ $fillable }}' => ${{ str($resource->resource)->camel()->singular() }}->{{ $fillable }},
+@endforeach
+                        'id' => ${{ str($resource->resource)->camel()->singular() }}->id,
+                        'created_at' => ${{ str($resource->resource)->camel()->singular() }}->created_at?->toISOString(),
+                        'updated_at' => ${{ str($resource->resource)->camel()->singular() }}->updated_at?->toISOString(),
+                    ])
+                    ->values()
+                    ->all(),
+                'current_page' => $paginator->currentPage(),
+                'last_page' => $paginator->lastPage(),
+                'per_page' => $paginator->perPage(),
+                'total' => $paginator->total(),
+            ],
+            'language' => $this->getLanguage(),
         ];
     }
 
-    protected function authorize(User $user): void
+    protected function get{{ str($resource->resource)->studly()->plural() }}(?string $search): LengthAwarePaginator
     {
-        if(Gate::forUser($user)->denies('index', {{ str($resource->resource)->studly()->singular() }}::class)) {
-            throw new AuthorizationException;
+        $query = {{ str($resource->resource)->studly()->singular() }}::query()
+            ->select([
+@foreach($resource->fillable as $fillable)
+                '{{ $fillable }}',
+@endforeach
+                'created_at',
+                'updated_at',
+            ]);
+
+        $this->applySearch($query, $search);
+
+        return $query->latest()->paginate(25)->withQueryString();
+    }
+
+    protected function applySearch(Builder $query, ?string $search): void
+    {
+        if ($search === null) {
+            return;
         }
+
+        $query->where(function (Builder $query) use ($search): void {
+@if(in_array('name', $resource->fillable))
+            $query->where('name', 'like', "%{$search}%");
+@else
+            $query->whereKey($search);
+@endif
+@if(in_array('description', $resource->fillable))
+            $query->orWhere('description', 'like', "%{$search}%");
+@endif
+        });
     }
 
     protected function getBreadcrumbs(): array
     {
         return [
             [
-                'title' => trans('{{ str($resource->resource)->snake()->singular() }}/index.breadcrumbs.resource'),
+                'title' => trans('{{ $resource->language->key('breadcrumbs.resource') }}'),
                 'href' => '#',
             ],
         ];
     }
 
+    protected function getLanguage(): array
+    {
+        return [
+            'messages' => [
+                'intro' => trans('{{ $resource->language->key('messages.intro') }}'),
+            ],
+            'fields' => trans('{{ $resource->language->key('fields') }}'),
+            'filters' => trans('{{ $resource->language->key('filters') }}'),
+        ];
+    }
+
     protected function getPageTitle(): string
     {
-        return trans('{{ str($resource->resource)->snake()->singular() }}/index.page_title');
-    }
-
-    protected function getUserName(User $user): string
-    {
-        return $user->name;
-    }
-
-    protected function get{{ str($resource->resource)->studly()->plural() }}(): LengthAwarePaginator
-    {
-        return {{ str($resource->resource)->studly()->singular() }}::query()
-            ->select([
-@if($resource->fillable)
-@foreach($resource->fillable as $fillable)
-                '{{ $fillable }}',
-@endforeach
-@endif
-                        'created_at',
-                        'updated_at',
-            ])
-            ->latest()
-            ->paginate(25);
+        return trans('{{ $resource->language->key('page_title') }}');
     }
 }

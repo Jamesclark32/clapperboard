@@ -43,6 +43,47 @@ Install agent-facing project instructions:
 php artisan clapperboard:install
 ```
 
+## Local Testing
+
+Example workflow for testing package changes against a local Laravel app:
+
+1. Add this package to a host app with a Composer path repository.
+2. Refresh the package in the host app after each package change.
+3. Run generator dry-runs first, then apply writes.
+
+In the host Laravel app:
+
+```bash
+composer update jamesclark32/clapperboard
+php artisan clapperboard:install --dry-run --json
+php artisan generate:model Widget "Widget catalog item" '{"attributes":[{"name":"name","fillable":true,"columnType":"string"},{"name":"description","fillable":true,"columnType":"text","nullable":true},{"name":"price","fillable":true,"columnType":"decimal","casts":"decimal"}],"relationships":[]}' --dry-run --json
+php artisan generate:route Widgets index --dry-run --json
+php artisan generate:route Widgets create --dry-run --json
+php artisan generate:route Widgets store --dry-run --json
+php artisan generate:route Widgets show --dry-run --json
+php artisan generate:route Widgets edit --dry-run --json
+php artisan generate:route Widgets update --dry-run --json
+```
+
+To apply the generated files in the host app:
+
+```bash
+php artisan generate:model Widget "Widget catalog item" '{"attributes":[{"name":"name","fillable":true,"columnType":"string"},{"name":"description","fillable":true,"columnType":"text","nullable":true},{"name":"price","fillable":true,"columnType":"decimal","casts":"decimal"}],"relationships":[]}'
+php artisan generate:route Widgets index
+php artisan generate:route Widgets create
+php artisan generate:route Widgets store
+php artisan generate:route Widgets show
+php artisan generate:route Widgets edit
+php artisan generate:route Widgets update
+```
+
+Useful follow-up checks in the host app:
+
+```bash
+php artisan test
+php artisan route:list --name=widgets
+```
+
 ## Usage
 
 Preview changes without writing files:

@@ -26,8 +26,8 @@ test('returns expected inertia component and props', function (): void {
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('{{ $resource->component->namespacedName() }}')
-            ->where('pageTitle', trans('{{ $resource->language->key('page_titles.index') }}'))
-            ->has('user')
+            ->where('pageTitle', trans('{{ $resource->language->key('page_title') }}'))
+            ->has('language.fields')
             ->has('{{ str($resource->resource)->lower()->plural() }}'));
 })->group('{{ str($resource->resource)->lower() }}');
 

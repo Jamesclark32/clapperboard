@@ -49,7 +49,7 @@
                         <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-950">
                             <tr v-for="row in {{ str($resource->resource)->lower()->plural() }}.data" :key="String(row.id)">
 @foreach($resource->writableFillable() as $fillable)
-                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@{{ row.{{ $fillable }} ?? ' - ' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@php echo "{{ row['{$fillable}'] ?? ' - ' }}" @endphp</td>
 @endforeach
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
                                     <Link :href="`/v/${row.id}`" class="underline">
@@ -62,9 +62,9 @@
                 </div>
 
                 <div class="text-sm text-gray-600 dark:text-gray-300">
-                    Page @{{ {{ str($resource->resource)->lower()->plural() }}.current_page }} of @{{ {{ str($resource->resource)->lower()->plural() }}.last_page }}
-                    • @{{ {{ str($resource->resource)->lower()->plural() }}.total }} total
-                    • @{{ {{ str($resource->resource)->lower()->plural() }}.per_page }} per page
+                    Page @php echo '{{ '.str($resource->resource)->lower()->plural()->toString().'.current_page }}' @endphp of @php echo '{{ '.str($resource->resource)->lower()->plural()->toString().'.last_page }}' @endphp
+                    • @php echo '{{ '.str($resource->resource)->lower()->plural()->toString().'.total }}' @endphp total
+                    • @php echo '{{ '.str($resource->resource)->lower()->plural()->toString().'.per_page }}' @endphp per page
                 </div>
 @endif
         </div>

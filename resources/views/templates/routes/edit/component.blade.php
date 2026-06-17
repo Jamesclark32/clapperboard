@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
-import AppLayout from '@/layouts/AppLayout.vue';
 import Form from './Form.vue';
 import type { BreadcrumbItem } from '@/types';
 
@@ -30,16 +29,13 @@ function submit(): void {
 
 <template>
     <Head :title="props.pageTitle" />
-
-    <AppLayout :breadcrumbs="props.breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    @{{ props.pageTitle }}
-                </h1>
-            </div>
-
-            <Form :form="form" :language="props.language" :options="props.options" @submit="submit" />
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                @{{ props.pageTitle }}
+            </h1>
         </div>
-    </AppLayout>
+
+        <Form :form="form" :language="props.language" :options="props.options" @submit="submit" />
+    </div>
 </template>

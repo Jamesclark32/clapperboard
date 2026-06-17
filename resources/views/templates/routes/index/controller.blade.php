@@ -17,6 +17,7 @@ final class {{ $resource->controller->className() }} extends BaseController
 
         return Inertia::render('{{ $resource->component->namespacedName() }}', {{ $resource->action->variableName() }}->{{ $resource->action->entryMethod() }}(
             $request->user(),
+            $request->string('search')->value() ?: null,
         ));
     }
 }
