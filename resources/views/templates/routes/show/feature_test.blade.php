@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 test('returns HTTP 200 response', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
@@ -27,3 +27,14 @@ test('redirects guests to the login page', function (): void {
 
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');
+
+@if($resource->isOwned())
+test('forbids access to another user\'s record', function (): void {
+    $user = User::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+
+    $response->assertForbidden();
+})->group('{{ str($resource->resource)->lower() }}');
+@endif

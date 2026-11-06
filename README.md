@@ -107,3 +107,6 @@ php artisan generate:model Widget "Widget catalog item" '{"attributes":[{"name":
 - `--json` returns machine-readable output for agents.
 - `php artisan clapperboard:install` writes Clapperboard instructions into `AGENTS.md` and `.github/copilot-instructions.md`.
 - Generated output assumes the host app follows the architecture used by this codebase.
+- Generated resources are owner-scoped when the model belongs to `User` (a `belongsTo` `User` relationship in `generate:model`, or a `user()` `BelongsTo` relation on the model for `generate:route`): policies allow only the owner, index queries list only the signed-in user's records, and store actions set the owner from the signed-in user.
+- Policies for models that don't belong to `User` deny every ability until you write their rules, so their generated feature tests fail with 403 until then.
+- Generated requests and actions never accept foreign keys (`*_id`) from the client. Add any that users may set yourself, with an `exists` rule scoped to the user.

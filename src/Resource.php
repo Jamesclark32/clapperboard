@@ -2,6 +2,7 @@
 
 namespace JamesClark32\Clapperboard;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use JamesClark32\Clapperboard\Resources\Action;
 use JamesClark32\Clapperboard\Resources\BrowserTest;
@@ -98,8 +99,23 @@ class Resource
     {
         return collect($this->fillable)
             ->reject(fn ($field) => in_array($field, ['id', 'created_at', 'updated_at', 'deleted_at']))
+            ->reject(fn ($field) => str_ends_with($field, '_id'))
             ->values()
             ->all();
+    }
+
+    public function isOwned(): bool
+    {
+        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+
+        return class_exists($modelClass)
+            && method_exists($modelClass, 'user')
+            && (new $modelClass)->user() instanceof BelongsTo;
+    }
+
+    public function ownedFactoryState(string $userVariable = '$user'): string
+    {
+        return $this->isOwned() ? "['user_id' => {$userVariable}->id]" : '';
     }
 
     public function routeParameterKey(): string

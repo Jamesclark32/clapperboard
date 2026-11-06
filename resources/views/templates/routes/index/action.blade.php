@@ -12,7 +12,7 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
     public function getProps(User $user, ?string $search = null): array
     {
-        $paginator = $this->get{{ str($resource->resource)->studly()->plural() }}($search);
+        $paginator = $this->get{{ str($resource->resource)->studly()->plural() }}($user, $search);
 
         return [
             'breadcrumbs' => $this->getBreadcrumbs(),
@@ -38,7 +38,7 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
         ];
     }
 
-    protected function get{{ str($resource->resource)->studly()->plural() }}(?string $search): LengthAwarePaginator
+    protected function get{{ str($resource->resource)->studly()->plural() }}(User $user, ?string $search): LengthAwarePaginator
     {
         $query = {{ str($resource->resource)->studly()->singular() }}::query()
             ->select([
@@ -47,7 +47,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
 @endforeach
                 'created_at',
                 'updated_at',
+@if($resource->isOwned())
+            ])
+            ->where('user_id', $user->id);
+@else
             ]);
+@endif
 
         $this->applySearch($query, $search);
 
