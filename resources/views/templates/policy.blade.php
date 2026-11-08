@@ -9,26 +9,38 @@ class {{ $resource->policy->className() }} extends BasePolicy
 {
     public function index(User $user): bool
     {
-        return true;
+        return {{ $resource->isOwned() ? 'true' : 'false' }};
     }
 
     public function show(User $user, {{ $resource->model->className() }} ${{ str($resource->resource)->camel()->singular() }}): bool
     {
-        return true;
+@if($resource->isOwned())
+        return $user->id === ${{ str($resource->resource)->camel()->singular() }}->user_id;
+@else
+        return false;
+@endif
     }
 
     public function store(User $user): bool
     {
-        return true;
+        return {{ $resource->isOwned() ? 'true' : 'false' }};
     }
 
     public function update(User $user, {{ $resource->model->className() }} ${{ str($resource->resource)->camel()->singular() }}): bool
     {
-        return true;
+@if($resource->isOwned())
+        return $user->id === ${{ str($resource->resource)->camel()->singular() }}->user_id;
+@else
+        return false;
+@endif
     }
 
     public function destroy(User $user, {{ $resource->model->className() }} ${{ str($resource->resource)->camel()->singular() }}): bool
     {
-        return true;
+@if($resource->isOwned())
+        return $user->id === ${{ str($resource->resource)->camel()->singular() }}->user_id;
+@else
+        return false;
+@endif
     }
 }

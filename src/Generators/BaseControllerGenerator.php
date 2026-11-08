@@ -2,6 +2,7 @@
 
 namespace JamesClark32\Clapperboard\Generators;
 
+use Illuminate\Support\Facades\File;
 use JamesClark32\Clapperboard\Resource;
 
 class BaseControllerGenerator
@@ -21,5 +22,10 @@ class BaseControllerGenerator
     public function fileContents(): string
     {
         return view('clapperboard::templates.base_controller', ['resource' => $this->resource])->render();
+    }
+
+    public function shouldGenerate(): bool
+    {
+        return ! File::exists(base_path($this->path()));
     }
 }
