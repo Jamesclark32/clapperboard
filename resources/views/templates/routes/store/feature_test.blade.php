@@ -61,6 +61,9 @@ test('stores data', function (): void {
     $response->assertRedirect();
 
     $this->assertDatabaseHas((new {{ str($resource->resource)->studly()->singular() }})->getTable(), [
+@if($resource->isOwned())
+        'user_id' => $user->id,
+@endif
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Stored {{ str($field)->apa() }}',
 @endforeach

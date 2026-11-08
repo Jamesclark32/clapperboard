@@ -11,12 +11,18 @@ final readonly class {{ $resource->action->className() }} extends BaseCommand
 {
     public function process(User $user, Collection $data): {{ str($resource->resource)->studly()->singular() }}
     {
-        return {{ str($resource->resource)->studly()->singular() }}::query()->create(
+        ${{ str($resource->resource)->camel()->singular() }} = new {{ str($resource->resource)->studly()->singular() }}(
             $data->only([
 @foreach($resource->writableFillable() as $field)
                 '{{ $field }}',
 @endforeach
             ])->all(),
         );
+@if($resource->isOwned())
+        ${{ str($resource->resource)->camel()->singular() }}->user()->associate($user);
+@endif
+        ${{ str($resource->resource)->camel()->singular() }}->save();
+
+        return ${{ str($resource->resource)->camel()->singular() }};
     }
 }
