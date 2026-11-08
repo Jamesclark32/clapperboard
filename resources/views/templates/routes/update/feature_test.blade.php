@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 test('redirects after updating data', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
 @foreach($resource->writableFillable() as $field)
@@ -40,7 +40,7 @@ test('redirects guests to the login page', function (): void {
 test('uses minimal database queries', function (): void {
     $user = User::factory()->create();
     DB::enableQueryLog();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
 @foreach($resource->writableFillable() as $field)
@@ -55,7 +55,7 @@ test('uses minimal database queries', function (): void {
 
 test('updates data', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
 @foreach($resource->writableFillable() as $field)
@@ -72,3 +72,14 @@ test('updates data', function (): void {
 @endforeach
     ]);
 })->group('{{ str($resource->resource)->lower() }}');
+
+@if($resource->isOwned())
+test('forbids access to another user\'s record', function (): void {
+    $user = User::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+
+    $response->assertForbidden();
+})->group('{{ str($resource->resource)->lower() }}');
+@endif

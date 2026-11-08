@@ -58,6 +58,13 @@ class ModelResource
         $this->dataDictionary = new DataDictionary($resource, $attributes);
     }
 
+    public function isOwned(): bool
+    {
+        return $this->relationships->contains(
+            fn (ModelRelationship $relationship): bool => $relationship->type === 'belongsTo' && $relationship->model === 'User'
+        );
+    }
+
     public function isQuery(): bool
     {
         return Verbs::isQuery($this->verb);

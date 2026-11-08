@@ -1,5 +1,8 @@
 @php echo '<?php'.PHP_EOL @endphp
 
+@if($resource->isOwned())
+use App\Models\{{ str($resource->resource)->studly()->singular() }};
+@endif
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -36,3 +39,16 @@ test('redirects guests to the login page', function (): void {
 
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');
+
+@if($resource->isOwned())
+test('lists only the signed-in user\'s records', function (): void {
+    $user = User::factory()->create();
+    {{ str($resource->resource)->studly()->singular() }}::factory()->create(['user_id' => $user->id]);
+    {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'));
+
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page->has('{{ str($resource->resource)->lower()->plural() }}.data', 1));
+})->group('{{ str($resource->resource)->lower() }}');
+@endif

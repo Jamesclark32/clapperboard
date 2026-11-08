@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 test('redirects after destroying data', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->delete(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
@@ -32,7 +32,7 @@ test('redirects guests to the login page', function (): void {
 test('uses minimal database queries', function (): void {
     $user = User::factory()->create();
     DB::enableQueryLog();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->delete(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
@@ -43,7 +43,7 @@ test('uses minimal database queries', function (): void {
 
 test('destroys data', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $response = $this->actingAs($user)->delete(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
 
@@ -53,3 +53,14 @@ test('destroys data', function (): void {
         'id' => ${{ str($resource->resource)->camel()->singular() }}->id,
     ]);
 })->group('{{ str($resource->resource)->lower() }}');
+
+@if($resource->isOwned())
+test('forbids access to another user\'s record', function (): void {
+    $user = User::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->delete(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+
+    $response->assertForbidden();
+})->group('{{ str($resource->resource)->lower() }}');
+@endif
