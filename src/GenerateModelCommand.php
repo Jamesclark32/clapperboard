@@ -71,6 +71,11 @@ class GenerateModelCommand extends Command
 
         foreach ($this->getGenerationClasses() as $generatorClass) {
             $generator = new $generatorClass($modelResource);
+
+            if (method_exists($generator, 'shouldGenerate') && ! $generator->shouldGenerate()) {
+                continue;
+            }
+
             $plan->addChange(PlannedChange::fromContents($generator->path(), $generator->fileContents()));
         }
 
