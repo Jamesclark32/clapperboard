@@ -40,7 +40,11 @@ class {{ $resource->model->className() }} extends Model
 @foreach($resource->relationships as $relationship)
     public function {{ in_array($relationship->type, ['hasMany', 'belongsToMany', 'morphMany', 'morphToMany']) ? Str::camel(Str::plural($relationship->model)) : Str::camel($relationship->model) }}(): {{ ucfirst($relationship->type) }}
     {
-@if(in_array($relationship->type, ['morphOne', 'morphMany', 'morphToMany']))
+@if($relationship->type === 'belongsToMany')
+        return $this->belongsToMany({{ $relationship->model }}::class)
+            ->using(\App\Models\Pivots\{{ (new \JamesClark32\Clapperboard\ModelResources\PivotModel($resource->resource, $relationship))->className() }}::class)
+            ->withTimestamps();
+@elseif(in_array($relationship->type, ['morphOne', 'morphMany', 'morphToMany']))
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class, '{{ $relationship->morphName }}');
 @else
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class);
