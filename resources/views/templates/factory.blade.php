@@ -4,8 +4,14 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @@extends Factory<\App\Models\{{ $resource->model->className() }}>
+ */
 class {{ $resource->factory->className() }} extends Factory
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [

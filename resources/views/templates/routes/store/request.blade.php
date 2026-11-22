@@ -12,6 +12,12 @@ final class {{ $resource->formRequest->className() }} extends FormRequest
         return $this->user()->can('store', {{ str($resource->resource)->studly()->singular() }}::class);
     }
 
+    /**
+
+     * @return array<string, array<int, string>>
+
+     */
+
     public function rules(): array
     {
         return [

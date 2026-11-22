@@ -11,6 +11,12 @@ final class {{ $resource->formRequest->className() }} extends FormRequest
         return $this->user()->can('update', $this->route('{{ $resource->routeParameterKey() }}'));
     }
 
+    /**
+
+     * @return array<string, array<int, string>>
+
+     */
+
     public function rules(): array
     {
         return [
