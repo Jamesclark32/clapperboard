@@ -16,6 +16,8 @@ class ModelRelationship
 
     public ?string $morphName;
 
+    public ?string $name;
+
     public function __construct(array $attributes = [])
     {
         foreach (['type', 'model'] as $key) {
@@ -30,6 +32,21 @@ class ModelRelationship
         $this->localKey = data_get($attributes, 'localKey');
         $this->pivot = data_get($attributes, 'pivot');
         $this->morphName = data_get($attributes, 'morphName');
+        $this->name = data_get($attributes, 'name');
+    }
+
+    /**
+     * The relation method name: the given name, or one derived from the model.
+     */
+    public function methodName(): string
+    {
+        if ($this->name) {
+            return $this->name;
+        }
+
+        return in_array($this->type, ['hasMany', 'belongsToMany', 'morphMany', 'morphToMany'], true)
+            ? \Illuminate\Support\Str::camel(\Illuminate\Support\Str::plural($this->model))
+            : \Illuminate\Support\Str::camel($this->model);
     }
 
     /**

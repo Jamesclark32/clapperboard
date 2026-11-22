@@ -17,8 +17,7 @@ final class {{ $resource->formRequest->className() }} extends FormRequest
 @forelse($resource->writableFillable() as $field)
             '{{ $field }}' => [
                 @if($field === 'name')'required'@else'nullable'@endif,
-                'string',
-                'max:255',
+                {!! $resource->typeRules($field) !!},
             ],
 @empty
             //

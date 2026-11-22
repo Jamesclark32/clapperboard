@@ -11,7 +11,7 @@ test('redirects after updating data', function (): void {
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Updated') !!},
 @endforeach
     ]);
 
@@ -30,7 +30,7 @@ test('redirects guests to the login page', function (): void {
 
     $response = $this->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Updated') !!},
 @endforeach
     ]);
 
@@ -44,7 +44,7 @@ test('uses minimal database queries', function (): void {
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Updated') !!},
 @endforeach
     ]);
 
@@ -59,7 +59,7 @@ test('updates data', function (): void {
 
     $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Saved {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Saved') !!},
 @endforeach
     ]);
 
@@ -68,7 +68,7 @@ test('updates data', function (): void {
     $this->assertDatabaseHas(${{ str($resource->resource)->camel()->singular() }}->getTable(), [
         'id' => ${{ str($resource->resource)->camel()->singular() }}->id,
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Saved {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Saved') !!},
 @endforeach
     ]);
 })->group('{{ str($resource->resource)->lower() }}');
