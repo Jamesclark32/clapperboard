@@ -5,14 +5,14 @@ import { create, destroy, edit, show } from '@/routes/{{ str($resource->resource
 import type { BreadcrumbItem } from '@/types';
 
 type Row = Record<string, unknown> & {
-    id: number | string;
+    id: number;
 };
 
 const props = defineProps<{
     breadcrumbs: BreadcrumbItem[];
     pageTitle: string;
     {{ str($resource->resource)->lower()->plural() }}: {
-        data: Record<string, unknown>[];
+        data: Row[];
         current_page: number;
         last_page: number;
         per_page: number;
@@ -46,7 +46,7 @@ function destroyRow(): void {
         return;
     }
 
-    router.delete(destroy.url({ widget: pendingDelete.value.id }), {
+    router.delete(destroy.url({ {{ $resource->routeParameterKey() }}: pendingDelete.value.id }), {
         preserveScroll: true,
         onFinish: closeDeleteModal,
     });
@@ -69,7 +69,7 @@ function destroyRow(): void {
             </Link>
         </div>
 
-        @{{ language.messages.description }}
+        @{{ language.messages.intro }}
 
         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-800">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
@@ -88,21 +88,21 @@ function destroyRow(): void {
                         <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@php echo "{{ row['{$fillable}'] ?? ' - ' }}" @endphp</td>
 @endforeach
                         <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">
-                            <Link :href="show.url({ widget: row.id as string | number })" class="underline">
+                            <Link :href="show.url({ {{ $resource->routeParameterKey() }}: row.id })" class="underline">
                                 @{{ row.id }}
                             </Link>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-2">
                                 <Link
-                                    :href="show.url({ widget: row.id as string | number })"
+                                    :href="show.url({ {{ $resource->routeParameterKey() }}: row.id })"
                                     class="inline-flex items-center rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900"
                                 >
                                     Show
                                 </Link>
 
                                 <Link
-                                    :href="edit.url({ widget: row.id as string | number })"
+                                    :href="edit.url({ {{ $resource->routeParameterKey() }}: row.id })"
                                     class="inline-flex items-center rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900"
                                 >
                                     Edit

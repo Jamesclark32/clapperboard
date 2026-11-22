@@ -56,20 +56,23 @@ function optionLabel(option: unknown): string {
                     @{{ optionLabel(option) }}
                 </option>
             </select>
+@if($field === 'description')
             <textarea
-                v-else-if="'{{ $field }}' === 'description'"
+                v-else
                 id="{{ $field }}"
                 v-model="props.form['{{ $field }}']"
                 rows="4"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
             ></textarea>
+@else
             <input
                 v-else
                 id="{{ $field }}"
                 v-model="props.form['{{ $field }}']"
-                type="text"
+                type="{{ in_array($resource->columnKind($field), ['integer', 'number'], true) ? 'number' : 'text' }}"
                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
             />
+@endif
 @endif
 
             <p v-if="props.form.errors['{{ $field }}']" class="text-sm text-red-600 dark:text-red-400">
