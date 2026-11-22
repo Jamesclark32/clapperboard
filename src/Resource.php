@@ -104,18 +104,42 @@ class Resource
             ->all();
     }
 
+    public function isTeamOwned(): bool
+    {
+        return $this->modelHasBelongsTo('team');
+    }
+
     public function isOwned(): bool
     {
-        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+        return ! $this->isTeamOwned() && $this->modelHasBelongsTo('user');
+    }
 
-        return class_exists($modelClass)
-            && method_exists($modelClass, 'user')
-            && (new $modelClass)->user() instanceof BelongsTo;
+    public function hasOwner(): bool
+    {
+        return $this->isTeamOwned() || $this->isOwned();
+    }
+
+    public function ownerName(): string
+    {
+        return $this->isTeamOwned() ? 'team' : 'user';
     }
 
     public function ownedFactoryState(string $userVariable = '$user'): string
     {
+        if ($this->isTeamOwned()) {
+            return "['team_id' => {$userVariable}->current_team_id]";
+        }
+
         return $this->isOwned() ? "['user_id' => {$userVariable}->id]" : '';
+    }
+
+    private function modelHasBelongsTo(string $relation): bool
+    {
+        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+
+        return class_exists($modelClass)
+            && method_exists($modelClass, $relation)
+            && (new $modelClass)->{$relation}() instanceof BelongsTo;
     }
 
     public function routeParameterKey(): string

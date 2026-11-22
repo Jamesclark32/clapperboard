@@ -18,7 +18,9 @@ final readonly class {{ $resource->action->className() }} extends BaseCommand
 @endforeach
             ])->all(),
         );
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+        ${{ str($resource->resource)->camel()->singular() }}->team()->associate($user->current_team_id);
+@elseif($resource->isOwned())
         ${{ str($resource->resource)->camel()->singular() }}->user()->associate($user);
 @endif
         ${{ str($resource->resource)->camel()->singular() }}->save();

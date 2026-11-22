@@ -47,7 +47,10 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
 @endforeach
                 'created_at',
                 'updated_at',
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+            ])
+            ->where('team_id', $user->current_team_id);
+@elseif($resource->isOwned())
             ])
             ->where('user_id', $user->id);
 @else

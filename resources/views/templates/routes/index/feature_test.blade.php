@@ -1,6 +1,6 @@
 @php echo '<?php'.PHP_EOL @endphp
 
-@if($resource->isOwned())
+@if($resource->hasOwner())
 use App\Models\{{ str($resource->resource)->studly()->singular() }};
 @endif
 use App\Models\User;
@@ -40,10 +40,14 @@ test('redirects guests to the login page', function (): void {
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');
 
-@if($resource->isOwned())
+@if($resource->hasOwner())
+@if($resource->isTeamOwned())
+test('lists only the current team\'s records', function (): void {
+@else
 test('lists only the signed-in user\'s records', function (): void {
+@endif
     $user = User::factory()->create();
-    {{ str($resource->resource)->studly()->singular() }}::factory()->create(['user_id' => $user->id]);
+    {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
     {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
     $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'));

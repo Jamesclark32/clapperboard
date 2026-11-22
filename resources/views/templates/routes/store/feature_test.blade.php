@@ -61,7 +61,9 @@ test('stores data', function (): void {
     $response->assertRedirect();
 
     $this->assertDatabaseHas((new {{ str($resource->resource)->studly()->singular() }})->getTable(), [
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+        'team_id' => $user->current_team_id,
+@elseif($resource->isOwned())
         'user_id' => $user->id,
 @endif
 @foreach($resource->writableFillable() as $field)

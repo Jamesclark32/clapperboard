@@ -28,8 +28,8 @@ test('redirects guests to the login page', function (): void {
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');
 
-@if($resource->isOwned())
-test('forbids access to another user\'s record', function (): void {
+@if($resource->hasOwner())
+test('forbids access to another {{ $resource->ownerName() }}\'s record', function (): void {
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
