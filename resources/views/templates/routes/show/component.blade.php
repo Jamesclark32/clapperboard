@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
@@ -11,7 +12,7 @@ const props = defineProps<{
     };
 }>();
 
-const {{ str($resource->resource)->camel()->singular() }} = props.{{ str($resource->resource)->camel()->singular() }};
+const {{ str($resource->resource)->camel()->singular() }} = computed(() => props.{{ str($resource->resource)->camel()->singular() }});
 </script>
 
 <template>

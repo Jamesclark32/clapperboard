@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { create, destroy, edit, show } from '@/routes/{{ str($resource->resource)->lower()->plural() }}';
 import type { BreadcrumbItem } from '@/types';
 
@@ -29,8 +29,8 @@ const props = defineProps<{
     };
 }>();
 
-const {{ str($resource->resource)->lower()->plural() }} = props.{{ str($resource->resource)->lower()->plural() }};
-const language = props.language;
+const {{ str($resource->resource)->lower()->plural() }} = computed(() => props.{{ str($resource->resource)->lower()->plural() }});
+const language = computed(() => props.language);
 const pendingDelete = ref<Row | null>(null);
 
 function openDeleteModal(row: Record<string, unknown>): void {
