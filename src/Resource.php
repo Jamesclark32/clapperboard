@@ -3,6 +3,7 @@
 namespace JamesClark32\Clapperboard;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use JamesClark32\Clapperboard\Resources\Action;
 use JamesClark32\Clapperboard\Resources\BrowserTest;
@@ -134,6 +135,54 @@ class Resource
         }
 
         return $this->isOwned() ? "['user_id' => {$userVariable}->id]" : '';
+    }
+
+    /**
+     * The kind of value a column holds: integer, number, boolean, text, or string.
+     * Reads the migrated database, so run migrations before generate:route.
+     */
+    public function columnKind(string $field): string
+    {
+        try {
+            $table = (new ('App\\Models\\'.Str::of($this->resource)->studly()->singular()))->getTable();
+            $type = strtolower(Schema::getColumnType($table, $field));
+        } catch (\Throwable) {
+            return 'string';
+        }
+
+        return match (true) {
+            str_contains($type, 'bool') => 'boolean',
+            (bool) preg_match('/int|serial/', $type) => 'integer',
+            (bool) preg_match('/numeric|decimal|float|double|real/', $type) => 'number',
+            str_contains($type, 'text') => 'text',
+            default => 'string',
+        };
+    }
+
+    /**
+     * Validation rules after required or nullable, matching the column's type.
+     */
+    public function typeRules(string $field): string
+    {
+        return match ($this->columnKind($field)) {
+            'integer' => "'integer'",
+            'number' => "'numeric'",
+            'boolean' => "'boolean'",
+            'text' => "'string'",
+            default => "'string', 'max:255'",
+        };
+    }
+
+    /**
+     * A PHP literal for generated tests, matching the column's type.
+     */
+    public function testValue(string $field, string $label): string
+    {
+        return match ($this->columnKind($field)) {
+            'integer', 'number' => (string) (['Test' => 1, 'Stored' => 2, 'Updated' => 3, 'Saved' => 4][$label] ?? 5),
+            'boolean' => 'true',
+            default => "'{$label} ".str($field)->apa()."'",
+        };
     }
 
     public function recordVariable(): string

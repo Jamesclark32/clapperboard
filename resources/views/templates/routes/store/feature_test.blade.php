@@ -10,7 +10,7 @@ test('redirects after storing data', function (): void {
 
     $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Test {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Test') !!},
 @endforeach
     ]);
 
@@ -27,7 +27,7 @@ test('has expected route definition', function (): void {
 test('redirects guests to the login page', function (): void {
     $response = $this->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments("'team'") !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Test {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Test') !!},
 @endforeach
     ]);
 
@@ -40,7 +40,7 @@ test('uses minimal database queries', function (): void {
 
     $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Test {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Test') !!},
 @endforeach
     ]);
 
@@ -54,7 +54,7 @@ test('stores data', function (): void {
 
     $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Stored {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Stored') !!},
 @endforeach
     ]);
 
@@ -67,7 +67,7 @@ test('stores data', function (): void {
         'user_id' => $user->id,
 @endif
 @foreach($resource->writableFillable() as $field)
-        '{{ $field }}' => 'Stored {{ str($field)->apa() }}',
+        '{{ $field }}' => {!! $resource->testValue($field, 'Stored') !!},
 @endforeach
     ]);
 })->group('{{ str($resource->resource)->lower() }}');

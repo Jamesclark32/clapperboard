@@ -38,7 +38,7 @@ class {{ $resource->model->className() }} extends Model
     }
 
 @foreach($resource->relationships as $relationship)
-    public function {{ in_array($relationship->type, ['hasMany', 'belongsToMany', 'morphMany', 'morphToMany']) ? Str::camel(Str::plural($relationship->model)) : Str::camel($relationship->model) }}(): {{ ucfirst($relationship->type) }}
+    public function {{ $relationship->methodName() }}(): {{ ucfirst($relationship->type) }}
     {
 @if($relationship->type === 'belongsToMany')
         return $this->belongsToMany({{ $relationship->model }}::class)
