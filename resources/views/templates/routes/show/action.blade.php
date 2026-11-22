@@ -8,6 +8,9 @@ use App\Models\User;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function getProps(User $user, {{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}): array
     {
         return [
@@ -25,6 +28,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
         ];
     }
 
+    /**
+
+     * @return array<int, array<string, string>>
+
+     */
+
     protected function getBreadcrumbs({{ str($resource->resource)->studly()->singular() }} ${{ str($resource->resource)->camel()->singular() }}): array
     {
         return [
@@ -38,6 +47,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
             ],
         ];
     }
+
+    /**
+
+     * @return array<string, mixed>
+
+     */
 
     protected function getLanguage(): array
     {

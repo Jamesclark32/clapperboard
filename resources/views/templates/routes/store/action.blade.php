@@ -9,6 +9,9 @@ use Illuminate\Support\Collection;
 
 final readonly class {{ $resource->action->className() }} extends BaseCommand
 {
+    /**
+     * @param  Collection<string, mixed>  $data
+     */
     public function process(User $user, Collection $data): {{ str($resource->resource)->studly()->singular() }}
     {
         ${{ str($resource->resource)->camel()->singular() }} = new {{ str($resource->resource)->studly()->singular() }}(
