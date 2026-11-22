@@ -58,10 +58,20 @@ class ModelResource
         $this->dataDictionary = new DataDictionary($resource, $attributes);
     }
 
+    public function isTeamOwned(): bool
+    {
+        return $this->belongsTo('Team');
+    }
+
     public function isOwned(): bool
     {
+        return ! $this->isTeamOwned() && $this->belongsTo('User');
+    }
+
+    private function belongsTo(string $model): bool
+    {
         return $this->relationships->contains(
-            fn (ModelRelationship $relationship): bool => $relationship->type === 'belongsTo' && $relationship->model === 'User'
+            fn (ModelRelationship $relationship): bool => $relationship->type === 'belongsTo' && $relationship->model === $model
         );
     }
 

@@ -15,6 +15,7 @@ use JamesClark32\Clapperboard\Generators\PivotModelGenerator;
 use JamesClark32\Clapperboard\Generators\PolicyGenerator;
 use JamesClark32\Clapperboard\Generators\SeederConfigGenerator;
 use JamesClark32\Clapperboard\Generators\SeederGenerator;
+use JamesClark32\Clapperboard\Generators\TeamRelationGenerator;
 
 class GenerateModelCommand extends Command
 {
@@ -94,7 +95,7 @@ class GenerateModelCommand extends Command
 
     private function getGenerationClasses(): array
     {
-        return [
+        return array_values(array_filter([
             ModelGenerator::class,
             MigrationGenerator::class,
             FactoryGenerator::class,
@@ -102,9 +103,10 @@ class GenerateModelCommand extends Command
             SeederConfigGenerator::class,
             BasePolicyGenerator::class,
             PolicyGenerator::class,
-            NovaResourceGenerator::class,
+            TeamRelationGenerator::class,
+            class_exists('Laravel\\Nova\\Nova') ? NovaResourceGenerator::class : null,
             DataDictionaryGenerator::class,
-        ];
+        ]));
     }
 
     private function renderPlan(Plan $plan, bool $dryRun, ?int $writes = null): void

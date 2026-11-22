@@ -107,6 +107,8 @@ class InstallCommand extends Command
             'Primary commands:',
             '- `php artisan generate:model ... --dry-run --json`',
             '- `php artisan generate:route ... --dry-run --json`',
+            '',
+            'Models that belong to `Team` generate team-scoped resources under `/team/{current_team}/`. Models that belong to `User` generate user-owned resources. See the Clapperboard README for the host-app settings team-scoped routes need.',
             self::ManagedBlockEnd,
         ]);
     }

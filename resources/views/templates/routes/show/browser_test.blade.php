@@ -5,10 +5,10 @@ use App\Models\User;
 
 it('displays with no errors', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $this->actingAs($user);
-    $page = visit(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $page = visit(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $page->assertNoJavascriptErrors()
         ->assertSee(trans('{{ $resource->language->key('page_title') }}'))
@@ -17,10 +17,10 @@ it('displays with no errors', function (): void {
 
 it('displays template elements', function (): void {
     $user = User::factory()->create();
-    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
     $this->actingAs($user);
-    $page = visit(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $page = visit(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $page
         ->assertSee((string) ${{ str($resource->resource)->camel()->singular() }}->getKey())

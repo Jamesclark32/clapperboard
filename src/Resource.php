@@ -16,6 +16,8 @@ use JamesClark32\Clapperboard\Resources\Route;
 
 class Resource
 {
+    public const TEAM_MIDDLEWARE = 'App\\Http\\Middleware\\EnsureTeamMembership';
+
     public Action $action;
 
     public Component $component;
@@ -50,6 +52,7 @@ class Resource
         $this->verb = $verb;
         $this->routeKey = $routeKey;
         $this->middleware = collect(['auth', 'verified'])
+            ->when($this->isTeamOwned(), fn ($collection) => $collection->push(self::TEAM_MIDDLEWARE))
             ->merge($middleware)
             ->filter()
             ->unique()
@@ -104,18 +107,71 @@ class Resource
             ->all();
     }
 
+    public function isTeamOwned(): bool
+    {
+        return $this->modelHasBelongsTo('team');
+    }
+
     public function isOwned(): bool
     {
-        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+        return ! $this->isTeamOwned() && $this->modelHasBelongsTo('user');
+    }
 
-        return class_exists($modelClass)
-            && method_exists($modelClass, 'user')
-            && (new $modelClass)->user() instanceof BelongsTo;
+    public function hasOwner(): bool
+    {
+        return $this->isTeamOwned() || $this->isOwned();
+    }
+
+    public function ownerName(): string
+    {
+        return $this->isTeamOwned() ? 'team' : 'user';
     }
 
     public function ownedFactoryState(string $userVariable = '$user'): string
     {
+        if ($this->isTeamOwned()) {
+            return "['team_id' => {$userVariable}->current_team_id]";
+        }
+
         return $this->isOwned() ? "['user_id' => {$userVariable}->id]" : '';
+    }
+
+    public function recordVariable(): string
+    {
+        return '$'.str($this->resource)->camel()->singular();
+    }
+
+    /**
+     * Route arguments for routes without a record parameter, such as index, create, and store.
+     */
+    public function collectionRouteArguments(string $teamSlug = '$user->currentTeam->slug'): string
+    {
+        return $this->isTeamOwned() ? ", ['current_team' => {$teamSlug}]" : '';
+    }
+
+    /**
+     * Route arguments for routes with a record parameter, such as show, edit, update, and destroy.
+     */
+    public function recordRouteArguments(?string $teamSlug = null): string
+    {
+        $record = "'{$this->routeParameterKey()}' => {$this->recordVariable()}";
+
+        if (! $this->isTeamOwned()) {
+            return ", [{$record}]";
+        }
+
+        $teamSlug ??= $this->recordVariable().'->team->slug';
+
+        return ", ['current_team' => {$teamSlug}, {$record}]";
+    }
+
+    private function modelHasBelongsTo(string $relation): bool
+    {
+        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+
+        return class_exists($modelClass)
+            && method_exists($modelClass, $relation)
+            && (new $modelClass)->{$relation}() instanceof BelongsTo;
     }
 
     public function routeParameterKey(): string

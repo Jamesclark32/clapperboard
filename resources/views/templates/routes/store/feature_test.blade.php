@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 test('redirects after storing data', function (): void {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'), [
+    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Test {{ str($field)->apa() }}',
 @endforeach
@@ -25,7 +25,7 @@ test('has expected route definition', function (): void {
 })->group('{{ str($resource->resource)->lower() }}');
 
 test('redirects guests to the login page', function (): void {
-    $response = $this->post(route('{{ $resource->route->name() }}'), [
+    $response = $this->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments("'team'") !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Test {{ str($field)->apa() }}',
 @endforeach
@@ -38,7 +38,7 @@ test('uses minimal database queries', function (): void {
     $user = User::factory()->create();
     DB::enableQueryLog();
 
-    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'), [
+    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Test {{ str($field)->apa() }}',
 @endforeach
@@ -52,7 +52,7 @@ test('uses minimal database queries', function (): void {
 test('stores data', function (): void {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'), [
+    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Stored {{ str($field)->apa() }}',
 @endforeach
@@ -61,7 +61,9 @@ test('stores data', function (): void {
     $response->assertRedirect();
 
     $this->assertDatabaseHas((new {{ str($resource->resource)->studly()->singular() }})->getTable(), [
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+        'team_id' => $user->current_team_id,
+@elseif($resource->isOwned())
         'user_id' => $user->id,
 @endif
 @foreach($resource->writableFillable() as $field)
@@ -74,7 +76,7 @@ test('stores data', function (): void {
 test('validates name is required', function (): void {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'), []);
+    $response = $this->actingAs($user)->post(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}), []);
 
     $response->assertSessionHasErrors('name');
 })->group('{{ str($resource->resource)->lower() }}');

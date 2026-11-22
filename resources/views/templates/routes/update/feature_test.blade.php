@@ -9,7 +9,7 @@ test('redirects after updating data', function (): void {
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
-    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
 @endforeach
@@ -28,7 +28,7 @@ test('has expected route definition', function (): void {
 test('redirects guests to the login page', function (): void {
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
-    $response = $this->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
+    $response = $this->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
 @endforeach
@@ -42,7 +42,7 @@ test('uses minimal database queries', function (): void {
     DB::enableQueryLog();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
-    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Updated {{ str($field)->apa() }}',
 @endforeach
@@ -57,7 +57,7 @@ test('updates data', function (): void {
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
-    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]), [
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}), [
 @foreach($resource->writableFillable() as $field)
         '{{ $field }}' => 'Saved {{ str($field)->apa() }}',
 @endforeach
@@ -73,13 +73,24 @@ test('updates data', function (): void {
     ]);
 })->group('{{ str($resource->resource)->lower() }}');
 
-@if($resource->isOwned())
-test('forbids access to another user\'s record', function (): void {
+@if($resource->hasOwner())
+test('forbids access to another {{ $resource->ownerName() }}\'s record', function (): void {
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
-    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}', ['{{ $resource->routeParameterKey() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $response->assertForbidden();
+})->group('{{ str($resource->resource)->lower() }}');
+@endif
+
+@if($resource->isTeamOwned())
+test('returns 404 for another team\'s record under the user\'s team URL', function (): void {
+    $user = User::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->put(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments('$user->currentTeam->slug') !!}));
+
+    $response->assertNotFound();
 })->group('{{ str($resource->resource)->lower() }}');
 @endif
