@@ -11,9 +11,13 @@ return new class extends Migration
         Schema::create('{{ $resource->migration->tableName() }}', static function (Blueprint $table) {
             $table->id();
 @foreach($resource->relationships->where('type', 'belongsTo') as $relationship)
-            $table->foreignIdFor(\App\Models\{{ $relationship->model }}::class)->constrained()->cascadeOnDelete();
+@if($relationship->foreignKey)
+            $table->foreignId('{{ $relationship->foreignKeyColumn() }}'){!! $resource->belongsToIsNullable($relationship) ? '->nullable()' : '' !!}->constrained((new \App\Models\{{ $relationship->model }})->getTable())->cascadeOnDelete();
+@else
+            $table->foreignIdFor(\App\Models\{{ $relationship->model }}::class){!! $resource->belongsToIsNullable($relationship) ? '->nullable()' : '' !!}->constrained()->cascadeOnDelete();
+@endif
 @endforeach
-@foreach($resource->attributes as $attribute)
+@foreach($resource->columnAttributes() as $attribute)
             $table->{{ $attribute->columnType }}('{{ $attribute->name }}'{!! $attribute->length !== null ? ', ' . $attribute->length : '' !!}){!! $attribute->nullable === true ? '->nullable()' : '' !!}{!! $attribute->default !== null ? '->default(' . $attribute->defaultValue() . ')' : '' !!}{!! $attribute->comment !== null ? "->comment('" . $attribute->comment . "')" : '' !!};
 @endforeach
 @if($resource->softDeletes)
