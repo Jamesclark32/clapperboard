@@ -18,6 +18,8 @@ return new class extends Migration
 @endforeach
 @endif
             $table->timestamps();
+
+            $table->unique(['{{ Str::snake($resource->resource) }}_id', '{{ Str::snake($pivotMigration->relationshipClass()) }}_id']);
         });
     }
 
