@@ -128,11 +128,33 @@ class FakerFieldMapper
     ];
 
     /**
+     * The cast type implied by a migration column type, used when no cast is given.
+     */
+    public static function castFromColumnType(string $columnType): ?string
+    {
+        $columnType = strtolower($columnType);
+
+        return match (true) {
+            str_contains($columnType, 'integer') || in_array($columnType, ['foreignid', 'id'], true) => 'integer',
+            $columnType === 'boolean' => 'boolean',
+            in_array($columnType, ['decimal', 'float', 'double'], true) => 'decimal',
+            $columnType === 'date' => 'date',
+            in_array($columnType, ['datetime', 'datetimetz', 'timestamp', 'timestamptz'], true) => 'datetime',
+            default => null,
+        };
+    }
+
+    /**
      * Get the appropriate faker method for a field.
      */
     public static function getFakerMethod(string $fieldName, ?string $castType = null): string
     {
         $fieldName = strtolower($fieldName);
+
+        // Numeric and boolean columns need a value of that type, whatever the name suggests
+        if (in_array($castType, ['integer', 'int', 'boolean', 'bool', 'float', 'double', 'decimal'], true)) {
+            return static::$castTypeMap[$castType];
+        }
 
         // Check for exact field name matches first
         if (isset(static::$fieldNameMap[$fieldName])) {

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class {{ $resource->model->className() }} extends Model
 {
+    /** @@use HasFactory<\Database\Factories\{{ $resource->factory->className() }}> */
     use HasFactory;
 @if($resource->softDeletes)
     use SoftDeletes;
@@ -26,6 +27,9 @@ class {{ $resource->model->className() }} extends Model
 @endforeach
     ];
 
+    /**
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -38,10 +42,25 @@ class {{ $resource->model->className() }} extends Model
     }
 
 @foreach($resource->relationships as $relationship)
-    public function {{ in_array($relationship->type, ['hasMany', 'belongsToMany', 'morphMany', 'morphToMany']) ? Str::camel(Str::plural($relationship->model)) : Str::camel($relationship->model) }}(): {{ ucfirst($relationship->type) }}
+    /**
+@if(in_array($relationship->type, ['belongsTo', 'morphTo']))
+     * @return {{ ucfirst($relationship->type) }}<{{ $relationship->model }}, $this>
+@elseif($relationship->type === 'belongsToMany')
+     * @return BelongsToMany<{{ $relationship->model }}, $this, \App\Models\Pivots\{{ (new \JamesClark32\Clapperboard\ModelResources\PivotModel($resource->resource, $relationship))->className() }}>
+@else
+     * @return {{ ucfirst($relationship->type) }}<{{ $relationship->model }}, $this>
+@endif
+     */
+    public function {{ $relationship->methodName() }}(): {{ ucfirst($relationship->type) }}
     {
-@if(in_array($relationship->type, ['morphOne', 'morphMany', 'morphToMany']))
+@if($relationship->type === 'belongsToMany')
+        return $this->belongsToMany({{ $relationship->model }}::class)
+            ->using(\App\Models\Pivots\{{ (new \JamesClark32\Clapperboard\ModelResources\PivotModel($resource->resource, $relationship))->className() }}::class)
+            ->withTimestamps();
+@elseif(in_array($relationship->type, ['morphOne', 'morphMany', 'morphToMany']))
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class, '{{ $relationship->morphName }}');
+@elseif($relationship->type === 'belongsTo' && $relationship->foreignKey)
+        return $this->belongsTo({{ $relationship->model }}::class, '{{ $relationship->foreignKey }}');
 @else
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class);
 @endif

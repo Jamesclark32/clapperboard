@@ -5,7 +5,7 @@ import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
     breadcrumbs: BreadcrumbItem[];
-    form: Record<string, unknown>;
+    form: Record<string, string | number | boolean | null>;
     options: Record<string, unknown>;
     pageTitle: string;
     language: {

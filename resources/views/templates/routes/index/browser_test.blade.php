@@ -8,7 +8,7 @@ it('displays with no errors', function (): void {
 
     // Act
     $this->actingAs($user);
-    $page = visit(route('{{ $resource->route->name() }}'));
+    $page = visit(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}));
 
     // Assert
     $page->assertNoJavascriptErrors()
@@ -22,7 +22,7 @@ it('displays template elements', function (): void {
 
     // Act
     $this->actingAs($user);
-    $page = visit(route('{{ $resource->route->name() }}'));
+    $page = visit(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}));
 
     // Assert
     $page

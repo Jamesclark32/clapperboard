@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 final readonly class {{ $resource->action->className() }} extends BaseQuery
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function getProps(User $user, ?string $search = null): array
     {
         $paginator = $this->get{{ str($resource->resource)->studly()->plural() }}($user, $search);
@@ -38,6 +41,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
         ];
     }
 
+    /**
+
+     * @return LengthAwarePaginator<int, {{ str($resource->resource)->studly()->singular() }}>
+
+     */
+
     protected function get{{ str($resource->resource)->studly()->plural() }}(User $user, ?string $search): LengthAwarePaginator
     {
         $query = {{ str($resource->resource)->studly()->singular() }}::query()
@@ -47,7 +56,10 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
 @endforeach
                 'created_at',
                 'updated_at',
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+            ])
+            ->where('team_id', $user->current_team_id);
+@elseif($resource->isOwned())
             ])
             ->where('user_id', $user->id);
 @else
@@ -58,6 +70,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
 
         return $query->latest()->paginate(25)->withQueryString();
     }
+
+    /**
+
+     * @param  Builder<{{ str($resource->resource)->studly()->singular() }}>  $query
+
+     */
 
     protected function applySearch(Builder $query, ?string $search): void
     {
@@ -77,6 +95,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
         });
     }
 
+    /**
+
+     * @return array<int, array<string, string>>
+
+     */
+
     protected function getBreadcrumbs(): array
     {
         return [
@@ -86,6 +110,12 @@ final readonly class {{ $resource->action->className() }} extends BaseQuery
             ],
         ];
     }
+
+    /**
+
+     * @return array<string, mixed>
+
+     */
 
     protected function getLanguage(): array
     {

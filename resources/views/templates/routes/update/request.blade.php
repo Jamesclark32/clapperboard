@@ -11,14 +11,19 @@ final class {{ $resource->formRequest->className() }} extends FormRequest
         return $this->user()->can('update', $this->route('{{ $resource->routeParameterKey() }}'));
     }
 
+    /**
+
+     * @return array<string, array<int, string>>
+
+     */
+
     public function rules(): array
     {
         return [
 @forelse($resource->writableFillable() as $field)
             '{{ $field }}' => [
                 @if($field === 'name')'required'@else'nullable'@endif,
-                'string',
-                'max:255',
+                {!! $resource->typeRules($field) !!},
             ],
 @empty
             //

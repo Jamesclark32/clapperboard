@@ -3,6 +3,7 @@
 namespace JamesClark32\Clapperboard;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use JamesClark32\Clapperboard\Resources\Action;
 use JamesClark32\Clapperboard\Resources\BrowserTest;
@@ -16,6 +17,8 @@ use JamesClark32\Clapperboard\Resources\Route;
 
 class Resource
 {
+    public const TEAM_MIDDLEWARE = 'App\\Http\\Middleware\\EnsureTeamMembership';
+
     public Action $action;
 
     public Component $component;
@@ -50,6 +53,7 @@ class Resource
         $this->verb = $verb;
         $this->routeKey = $routeKey;
         $this->middleware = collect(['auth', 'verified'])
+            ->when($this->isTeamOwned(), fn ($collection) => $collection->push(self::TEAM_MIDDLEWARE))
             ->merge($middleware)
             ->filter()
             ->unique()
@@ -104,18 +108,119 @@ class Resource
             ->all();
     }
 
+    public function isTeamOwned(): bool
+    {
+        return $this->modelHasBelongsTo('team');
+    }
+
     public function isOwned(): bool
     {
-        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+        return ! $this->isTeamOwned() && $this->modelHasBelongsTo('user');
+    }
 
-        return class_exists($modelClass)
-            && method_exists($modelClass, 'user')
-            && (new $modelClass)->user() instanceof BelongsTo;
+    public function hasOwner(): bool
+    {
+        return $this->isTeamOwned() || $this->isOwned();
+    }
+
+    public function ownerName(): string
+    {
+        return $this->isTeamOwned() ? 'team' : 'user';
     }
 
     public function ownedFactoryState(string $userVariable = '$user'): string
     {
+        if ($this->isTeamOwned()) {
+            return "['team_id' => {$userVariable}->current_team_id]";
+        }
+
         return $this->isOwned() ? "['user_id' => {$userVariable}->id]" : '';
+    }
+
+    /**
+     * The kind of value a column holds: integer, number, boolean, text, or string.
+     * Reads the migrated database, so run migrations before generate:route.
+     */
+    public function columnKind(string $field): string
+    {
+        try {
+            $table = (new ('App\\Models\\'.Str::of($this->resource)->studly()->singular()))->getTable();
+            $type = strtolower(Schema::getColumnType($table, $field));
+        } catch (\Throwable) {
+            return 'string';
+        }
+
+        return match (true) {
+            str_contains($type, 'bool') => 'boolean',
+            (bool) preg_match('/int|serial/', $type) => 'integer',
+            (bool) preg_match('/numeric|decimal|float|double|real/', $type) => 'number',
+            str_contains($type, 'text') => 'text',
+            default => 'string',
+        };
+    }
+
+    /**
+     * Validation rules after required or nullable, matching the column's type.
+     */
+    public function typeRules(string $field): string
+    {
+        return match ($this->columnKind($field)) {
+            'integer' => "'integer'",
+            'number' => "'numeric'",
+            'boolean' => "'boolean'",
+            'text' => "'string'",
+            default => "'string', 'max:255'",
+        };
+    }
+
+    /**
+     * A PHP literal for generated tests, matching the column's type.
+     */
+    public function testValue(string $field, string $label): string
+    {
+        return match ($this->columnKind($field)) {
+            'integer', 'number' => (string) (['Test' => 1, 'Stored' => 2, 'Updated' => 3, 'Saved' => 4][$label] ?? 5),
+            'boolean' => 'true',
+            default => "'{$label} ".str($field)->apa()."'",
+        };
+    }
+
+    public function recordVariable(): string
+    {
+        return '$'.str($this->resource)->camel()->singular();
+    }
+
+    /**
+     * Route arguments for routes without a record parameter, such as index, create, and store.
+     */
+    public function collectionRouteArguments(string $teamSlug = '$user->currentTeam->slug'): string
+    {
+        return $this->isTeamOwned() ? ", ['current_team' => {$teamSlug}]" : '';
+    }
+
+    /**
+     * Route arguments for routes with a record parameter, such as show, edit, update, and destroy.
+     */
+    public function recordRouteArguments(?string $teamSlug = null): string
+    {
+        $record = "'{$this->routeParameterKey()}' => {$this->recordVariable()}";
+
+        if (! $this->isTeamOwned()) {
+            return ", [{$record}]";
+        }
+
+        $teamSlug ??= $this->recordVariable().'->team->slug';
+
+        return ", ['current_team' => {$teamSlug}, {$record}]";
+    }
+
+    private function modelHasBelongsTo(string $relation): bool
+    {
+        $modelClass = 'App\\Models\\'.Str::of($this->resource)->studly()->singular();
+
+        return class_exists($modelClass)
+            && method_exists($modelClass, $relation)
+            && (new $modelClass)->{$relation}() instanceof BelongsTo;
     }
 
     public function routeParameterKey(): string

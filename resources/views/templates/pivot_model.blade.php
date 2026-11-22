@@ -10,17 +10,20 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
 class {{ $pivotModel->className() }} extends Pivot
 {
 
-@if($pivotModel->relationship->pivot && !empty($pivotModel->relationship->pivot['timestamps']))
-    public $timestamps = true;
-@else
-    public $timestamps = false;
-@endif
+    // The pivot migration creates an auto-incrementing id and timestamps.
+    public $incrementing = true;
 
+    /**
+     * @return BelongsTo<{{ $pivotModel->resourceName }}, $this>
+     */
     public function {{ Str::camel($pivotModel->resourceName) }}(): BelongsTo
     {
         return $this->belongsTo({{ $pivotModel->resourceName }}::class);
     }
 
+    /**
+     * @return BelongsTo<{{ $pivotModel->relationship->model }}, $this>
+     */
     public function {{ Str::camel($pivotModel->relationship->model) }}(): BelongsTo
     {
         return $this->belongsTo({{ $pivotModel->relationship->model }}::class);

@@ -58,10 +58,45 @@ class ModelResource
         $this->dataDictionary = new DataDictionary($resource, $attributes);
     }
 
+    /**
+     * Attributes that get their own column, leaving out foreign keys a belongsTo
+     * relationship already creates.
+     */
+    public function columnAttributes(): Collection
+    {
+        $foreignKeys = $this->relationships
+            ->where('type', 'belongsTo')
+            ->map(fn (ModelRelationship $relationship): string => $relationship->foreignKeyColumn());
+
+        return $this->attributes
+            ->reject(fn (ModelAttribute $attribute): bool => $foreignKeys->contains($attribute->name))
+            ->values();
+    }
+
+    /**
+     * Whether the attribute declared for a belongsTo's foreign key is nullable.
+     */
+    public function belongsToIsNullable(ModelRelationship $relationship): bool
+    {
+        return $this->attributes
+            ->first(fn (ModelAttribute $attribute): bool => $attribute->name === $relationship->foreignKeyColumn())
+            ?->nullable === true;
+    }
+
+    public function isTeamOwned(): bool
+    {
+        return $this->belongsTo('Team');
+    }
+
     public function isOwned(): bool
     {
+        return ! $this->isTeamOwned() && $this->belongsTo('User');
+    }
+
+    private function belongsTo(string $model): bool
+    {
         return $this->relationships->contains(
-            fn (ModelRelationship $relationship): bool => $relationship->type === 'belongsTo' && $relationship->model === 'User'
+            fn (ModelRelationship $relationship): bool => $relationship->type === 'belongsTo' && $relationship->model === $model
         );
     }
 

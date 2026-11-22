@@ -32,10 +32,12 @@ class PivotMigration
             return str_replace(base_path('/'), '', $existing[0]);
         }
 
+        // Stamp one second after now, so the pivot runs after the model's own migration,
+        // which is stamped now (or earlier, when it already exists).
         $segments = collect([
             'database',
             'migrations',
-            Str::of($tableName)->prepend(date('Y_m_d_His').'_create_')->append('_pivot_table.php'),
+            Str::of($tableName)->prepend(date('Y_m_d_His', time() + 1).'_create_')->append('_pivot_table.php'),
         ]);
 
         return $segments->implode('/');

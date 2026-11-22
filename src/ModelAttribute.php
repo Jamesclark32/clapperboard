@@ -46,7 +46,7 @@ class ModelAttribute
         // Use intelligent faker mapping instead of default 'word'
         $fakerMethod = data_get($attributes, 'fakerMethod');
         if (! $fakerMethod) {
-            $fakerMethod = FakerFieldMapper::getFakerMethod($this->name, $this->casts);
+            $fakerMethod = FakerFieldMapper::getFakerMethod($this->name, $this->casts ?? FakerFieldMapper::castFromColumnType($this->columnType));
         }
         $this->fakerMethod = $fakerMethod;
 

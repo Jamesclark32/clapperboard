@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 test('returns HTTP 200 response', function (): void {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'));
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}));
 
     $response->assertOk();
 })->group('{{ str($resource->resource)->lower() }}');
@@ -21,7 +21,7 @@ test('has expected route definition', function (): void {
 test('returns expected inertia component and props', function (): void {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'));
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments() !!}));
 
     $response->assertOk()
         ->assertInertia(fn ($page) => $page
@@ -33,7 +33,7 @@ test('returns expected inertia component and props', function (): void {
 })->group('{{ str($resource->resource)->lower() }}');
 
 test('redirects guests to the login page', function (): void {
-    $response = $this->get(route('{{ $resource->route->name() }}'));
+    $response = $this->get(route('{{ $resource->route->name() }}'{!! $resource->collectionRouteArguments("'team'") !!}));
 
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');

@@ -15,6 +15,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class {{ $resource->query->className() }}
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function getProps(User $user): array
     {
         return [
@@ -33,6 +36,12 @@ class {{ $resource->query->className() }}
             'name',
         ]);
     }
+
+    /**
+
+     * @return array<int, array<string, string>>
+
+     */
 
     protected function getBreadcrumbs(): array
     {
@@ -54,6 +63,9 @@ class {{ $resource->query->className() }}
     }
 
 @if($resource->verb==='index')
+    /**
+     * @return LengthAwarePaginator<int, {{ str($resource->resource)->studly()->singular() }}>
+     */
     protected function get{{ str($resource->resource)->studly()->plural() }}(): LengthAwarePaginator
     {
         return {{ str($resource->resource)->studly()->singular() }}::query()

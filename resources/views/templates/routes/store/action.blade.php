@@ -9,6 +9,9 @@ use Illuminate\Support\Collection;
 
 final readonly class {{ $resource->action->className() }} extends BaseCommand
 {
+    /**
+     * @param  Collection<string, mixed>  $data
+     */
     public function process(User $user, Collection $data): {{ str($resource->resource)->studly()->singular() }}
     {
         ${{ str($resource->resource)->camel()->singular() }} = new {{ str($resource->resource)->studly()->singular() }}(
@@ -18,7 +21,9 @@ final readonly class {{ $resource->action->className() }} extends BaseCommand
 @endforeach
             ])->all(),
         );
-@if($resource->isOwned())
+@if($resource->isTeamOwned())
+        ${{ str($resource->resource)->camel()->singular() }}->team()->associate($user->current_team_id);
+@elseif($resource->isOwned())
         ${{ str($resource->resource)->camel()->singular() }}->user()->associate($user);
 @endif
         ${{ str($resource->resource)->camel()->singular() }}->save();

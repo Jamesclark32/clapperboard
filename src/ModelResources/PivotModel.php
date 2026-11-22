@@ -42,7 +42,7 @@ class PivotModel
     public function qualifiedFilename(): string
     {
         $segments = collect([
-            'App',
+            'app',
             'Models',
             'Pivots',
         ]);
