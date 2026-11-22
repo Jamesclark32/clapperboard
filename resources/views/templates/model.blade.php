@@ -46,6 +46,8 @@ class {{ $resource->model->className() }} extends Model
             ->withTimestamps();
 @elseif(in_array($relationship->type, ['morphOne', 'morphMany', 'morphToMany']))
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class, '{{ $relationship->morphName }}');
+@elseif($relationship->type === 'belongsTo' && $relationship->foreignKey)
+        return $this->belongsTo({{ $relationship->model }}::class, '{{ $relationship->foreignKey }}');
 @else
         return $this->{{ $relationship->type }}({{ $relationship->model }}::class);
 @endif
