@@ -15,6 +15,7 @@ use JamesClark32\Clapperboard\Generators\PivotModelGenerator;
 use JamesClark32\Clapperboard\Generators\PolicyGenerator;
 use JamesClark32\Clapperboard\Generators\SeederConfigGenerator;
 use JamesClark32\Clapperboard\Generators\SeederGenerator;
+use JamesClark32\Clapperboard\Generators\TeamRelationGenerator;
 
 class GenerateModelCommand extends Command
 {
@@ -102,6 +103,7 @@ class GenerateModelCommand extends Command
             SeederConfigGenerator::class,
             BasePolicyGenerator::class,
             PolicyGenerator::class,
+            TeamRelationGenerator::class,
             class_exists('Laravel\\Nova\\Nova') ? NovaResourceGenerator::class : null,
             DataDictionaryGenerator::class,
         ]));

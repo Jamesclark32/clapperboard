@@ -8,7 +8,7 @@ test('returns HTTP 200 response', function (): void {
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create({!! $resource->ownedFactoryState() !!});
 
-    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $response->assertOk();
 })->group('{{ str($resource->resource)->lower() }}');
@@ -23,7 +23,7 @@ test('has expected route definition', function (): void {
 test('redirects guests to the login page', function (): void {
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
-    $response = $this->get(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $response = $this->get(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $response->assertRedirect(route('login'));
 })->group('{{ str($resource->resource)->lower() }}');
@@ -33,8 +33,19 @@ test('forbids access to another {{ $resource->ownerName() }}\'s record', functio
     $user = User::factory()->create();
     ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
 
-    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}', ['{{ str($resource->resource)->camel()->singular() }}' => ${{ str($resource->resource)->camel()->singular() }}]));
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments() !!}));
 
     $response->assertForbidden();
+})->group('{{ str($resource->resource)->lower() }}');
+@endif
+
+@if($resource->isTeamOwned())
+test('returns 404 for another team\'s record under the user\'s team URL', function (): void {
+    $user = User::factory()->create();
+    ${{ str($resource->resource)->camel()->singular() }} = {{ str($resource->resource)->studly()->singular() }}::factory()->create();
+
+    $response = $this->actingAs($user)->get(route('{{ $resource->route->name() }}'{!! $resource->recordRouteArguments('$user->currentTeam->slug') !!}));
+
+    $response->assertNotFound();
 })->group('{{ str($resource->resource)->lower() }}');
 @endif
